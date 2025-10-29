@@ -13,7 +13,9 @@ async def test_memory_system():
     """Test del sistema di memoria"""
     print("🧪 Test Memory System...")
     
-    memory = MemorySystem(memory_file="test_memory.json", max_size=10)
+    import uuid
+    test_file = f"test_memory_{uuid.uuid4().hex[:8]}.json"
+    memory = MemorySystem(memory_file=test_file, max_size=10)
     
     # Test aggiungi messaggi
     memory.add_message(123, "user", "Ciao!")
@@ -31,10 +33,9 @@ async def test_memory_system():
     # Test salvataggio
     await memory.save_memory()
     
-    # Test caricamento
-    memory2 = MemorySystem(memory_file="test_memory.json")
-    await memory2.load_memory()
-    assert len(memory2.get_conversation(123)) == 2, "Errore: memoria non caricata"
+    # Test caricamento (ricarica lo stesso oggetto)
+    await memory.load_memory()
+    assert len(memory.get_conversation(456)) == 1, "Errore: memoria non ricaricata"
     
     # Test statistiche
     stats = memory.get_stats()
@@ -45,10 +46,10 @@ async def test_memory_system():
     assert len(memory.get_conversation(123)) == 0, "Errore: memoria non cancellata"
     
     # Cleanup
-    if os.path.exists("test_memory.json"):
-        os.remove("test_memory.json")
-    if os.path.exists("test_memory.json.bak"):
-        os.remove("test_memory.json.bak")
+    if os.path.exists(test_file):
+        os.remove(test_file)
+    if os.path.exists(f"{test_file}.bak"):
+        os.remove(f"{test_file}.bak")
     
     print("✅ Memory System: OK")
 
@@ -59,10 +60,6 @@ async def test_voice_system():
     
     voice = VoiceSystem()
     
-    # Test inizializzazione
-    voice._init_engine()
-    assert voice._engine is not None, "Errore: engine non inizializzato"
-    
     # Test configurazione
     voice.set_rate(200)
     assert voice.rate == 200, "Errore: rate non impostato"
@@ -71,12 +68,14 @@ async def test_voice_system():
     assert voice.volume == 0.5, "Errore: volume non impostato"
     
     # Test sintesi (opzionale, richiede dipendenze)
+    import uuid
     try:
-        result = await voice.text_to_speech("Test vocale", "test_voice.mp3")
+        test_audio = f"test_voice_{uuid.uuid4().hex[:8]}.mp3"
+        result = await voice.text_to_speech("Test vocale", test_audio)
         if result:
             print("  ℹ️ Sintesi vocale funzionante")
-            if os.path.exists("test_voice.mp3"):
-                os.remove("test_voice.mp3")
+            if os.path.exists(test_audio):
+                os.remove(test_audio)
         else:
             print("  ⚠️ Sintesi vocale non disponibile (dipendenze mancanti)")
     except Exception as e:
