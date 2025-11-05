@@ -7,10 +7,18 @@ import pyttsx3
 import os
 from typing import Optional
 import asyncio
+import atexit
 from concurrent.futures import ThreadPoolExecutor
 
 # Shared thread pool for all VoiceSystem instances
 _SHARED_EXECUTOR = ThreadPoolExecutor(max_workers=2, thread_name_prefix="tts")
+
+# Register cleanup function to shutdown executor on exit
+def _cleanup_executor():
+    """Cleanup shared executor on application exit"""
+    _SHARED_EXECUTOR.shutdown(wait=True, cancel_futures=False)
+
+atexit.register(_cleanup_executor)
 
 
 class VoiceSystem:

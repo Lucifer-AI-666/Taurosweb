@@ -95,10 +95,10 @@ class MemorySystem:
         
         self.conversations[user_id].append(message)
         
-        # Limita la dimensione della memoria (delete oldest instead of slicing entire list)
+        # Limita la dimensione della memoria
         if len(self.conversations[user_id]) > self.max_size:
-            # More efficient: remove from beginning instead of creating new list
-            del self.conversations[user_id][0:len(self.conversations[user_id]) - self.max_size]
+            # Keep only the most recent messages (efficient slicing)
+            self.conversations[user_id] = self.conversations[user_id][-self.max_size:]
         
         # Increment counter and check if should save
         self._message_count += 1

@@ -50,19 +50,17 @@ if not os.path.exists(f"{self.memory_file}.bak"):
 **Impact:** Eliminates redundant file operations, faster saves.
 
 #### Efficient List Operations
-**Problem:** Used list slicing which creates new lists, wasting memory.
+**Problem:** Need to limit conversation history size efficiently.
 
-**Solution:** Use `del` to remove items in-place.
+**Solution:** Use list slicing to keep most recent messages (still efficient for typical sizes).
 
 ```python
-# Before: Creates new list
-self.conversations[user_id] = self.conversations[user_id][-self.max_size:]
-
-# After: Modifies in-place
-del self.conversations[user_id][0:len(self.conversations[user_id]) - self.max_size]
+# Keep only the most recent messages
+if len(self.conversations[user_id]) > self.max_size:
+    self.conversations[user_id] = self.conversations[user_id][-self.max_size:]
 ```
 
-**Impact:** Reduced memory allocations, faster operation.
+**Impact:** Clean, Pythonic approach that's efficient for typical conversation sizes.
 
 #### Atomic File Writes
 **Problem:** Direct file writes could corrupt data on failure.
@@ -112,41 +110,42 @@ for msg in context_messages:
 
 **Impact:** Cleaner code, slightly faster.
 
-#### Async File Operations
-**Problem:** Voice file reading was synchronous, blocking the event loop.
+#### File Streaming
+**Problem:** Loading large audio files into memory could cause memory issues.
 
-**Solution:** Use aiofiles for non-blocking I/O.
+**Solution:** Stream files directly to Telegram API instead of loading into memory.
 
 ```python
-# Before: Blocking
+# Stream files for memory efficiency
 with open(audio_path, 'rb') as audio:
     await update.message.reply_voice(audio)
-
-# After: Non-blocking
-async with aiofiles.open(audio_path, 'rb') as audio:
-    audio_data = await audio.read()
-    await update.message.reply_voice(BytesIO(audio_data))
 ```
 
-**Impact:** Better concurrency, handles multiple users better.
+**Impact:** Memory-efficient file handling, supports files of any size.
 
 ### 3. Voice System (voice.py)
 
 #### Shared Thread Pool
 **Problem:** Each VoiceSystem instance created its own ThreadPoolExecutor, wasting resources.
 
-**Solution:** Use a shared global executor.
+**Solution:** Use a shared global executor with proper cleanup.
 
 ```python
 # Before: Per-instance executor
 self.executor = ThreadPoolExecutor(max_workers=2)
 
-# After: Shared executor
+# After: Shared executor with cleanup
 _SHARED_EXECUTOR = ThreadPoolExecutor(max_workers=2)
+
+def _cleanup_executor():
+    _SHARED_EXECUTOR.shutdown(wait=True)
+
+atexit.register(_cleanup_executor)
+
 self.executor = _SHARED_EXECUTOR
 ```
 
-**Impact:** Reduced thread overhead, better resource usage.
+**Impact:** Reduced thread overhead, better resource usage, proper cleanup on exit.
 
 #### Thread-Safe Engine Access
 **Problem:** Potential race conditions in multi-threaded TTS.
@@ -164,7 +163,7 @@ self._engine_lock = asyncio.Lock()
 #### Stale-While-Revalidate Strategy
 **Problem:** Cache-first strategy didn't update cached content, causing stale data.
 
-**Solution:** Return cached content immediately, update in background.
+**Solution:** Return cached content immediately, update in background with event.waitUntil.
 
 ```javascript
 // Before: Cache-only, no updates
@@ -174,15 +173,17 @@ if (cachedResponse) {
 
 // After: Stale-while-revalidate
 if (cachedResponse) {
-    // Update in background
-    fetch(request).then(response => {
-        cache.put(request, response.clone());
-    });
+    // Update in background (prevent cancellation with waitUntil)
+    event.waitUntil(
+        fetch(request).then(response => {
+            cache.put(request, response.clone());
+        })
+    );
     return cachedResponse;  // Return immediately
 }
 ```
 
-**Impact:** Faster response times, always fresh content.
+**Impact:** Faster response times, always fresh content, background updates guaranteed.
 
 #### Fetch Timeout
 **Problem:** Network requests could hang indefinitely.

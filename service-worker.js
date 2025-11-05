@@ -57,14 +57,17 @@ self.addEventListener('fetch', event => {
         // Cache hit - ritorna la risposta dalla cache
         if (cachedResponse) {
           // Stale-while-revalidate: return cache immediately, update in background
-          const fetchPromise = fetch(request).then(response => {
-            if (response && response.status === 200 && response.type === 'basic') {
-              const responseToCache = response.clone();
-              caches.open(CACHE_NAME).then(cache => {
-                cache.put(request, responseToCache);
-              });
-            }
-          }).catch(() => {}); // Ignore background update errors
+          // Use event.waitUntil to prevent fetch from being cancelled
+          event.waitUntil(
+            fetch(request).then(response => {
+              if (response && response.status === 200 && response.type === 'basic') {
+                const responseToCache = response.clone();
+                return caches.open(CACHE_NAME).then(cache => {
+                  return cache.put(request, responseToCache);
+                });
+              }
+            }).catch(() => {}) // Ignore background update errors
+          );
           
           return cachedResponse;
         }

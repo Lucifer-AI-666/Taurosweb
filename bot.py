@@ -8,6 +8,7 @@ import logging
 import asyncio
 from datetime import datetime
 from typing import Optional
+from io import BytesIO
 import yaml
 from dotenv import load_dotenv
 
@@ -20,6 +21,7 @@ from telegram.ext import (
     filters
 )
 import httpx
+import aiofiles
 
 from memory import MemorySystem
 from voice import VoiceSystem
@@ -240,13 +242,9 @@ class TauroBot:
             
             if audio_path and os.path.exists(audio_path):
                 try:
-                    # Use async file operations for better performance
-                    import aiofiles
-                    async with aiofiles.open(audio_path, 'rb') as audio:
-                        audio_data = await audio.read()
-                        # Create BytesIO for telegram API
-                        from io import BytesIO
-                        await update.message.reply_voice(BytesIO(audio_data))
+                    # Open file for streaming to avoid loading entire file in memory
+                    with open(audio_path, 'rb') as audio:
+                        await update.message.reply_voice(audio)
                 finally:
                     # Pulisci file temporaneo
                     if os.path.exists(audio_path):
