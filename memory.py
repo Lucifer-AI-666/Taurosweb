@@ -7,7 +7,9 @@ import json
 import os
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
-import aiofiles
+from utils import FileManager, get_logger
+
+logger = get_logger(__name__)
 
 
 class MemorySystem:
@@ -21,20 +23,20 @@ class MemorySystem:
         
     def _ensure_directory(self):
         """Crea la directory memory se non esiste"""
-        os.makedirs(os.path.dirname(self.memory_file), exist_ok=True)
+        FileManager.ensure_directory(self.memory_file)
         
     async def load_memory(self) -> bool:
         """Carica la memoria dal file"""
         try:
-            if os.path.exists(self.memory_file):
-                async with aiofiles.open(self.memory_file, 'r', encoding='utf-8') as f:
-                    content = await f.read()
+            if FileManager.file_exists(self.memory_file):
+                content = await FileManager.async_read_file(self.memory_file)
+                if content:
                     data = json.loads(content)
                     # Converti le chiavi da stringa a int
                     self.conversations = {int(k): v for k, v in data.get('conversations', {}).items()}
-                return True
+                    return True
         except Exception as e:
-            print(f"Errore nel caricamento della memoria: {e}")
+            logger.error(f"Errore nel caricamento della memoria: {e}")
             return False
         return False
         
@@ -42,10 +44,9 @@ class MemorySystem:
         """Salva la memoria sul file"""
         try:
             # Crea un backup
-            if os.path.exists(self.memory_file):
+            if FileManager.file_exists(self.memory_file):
                 backup_file = f"{self.memory_file}.bak"
-                if os.path.exists(backup_file):
-                    os.remove(backup_file)
+                FileManager.safe_remove(backup_file)
                 os.rename(self.memory_file, backup_file)
             
             # Salva i dati
@@ -54,11 +55,10 @@ class MemorySystem:
                 'last_updated': datetime.now().isoformat()
             }
             
-            async with aiofiles.open(self.memory_file, 'w', encoding='utf-8') as f:
-                await f.write(json.dumps(data, indent=2, ensure_ascii=False))
-            return True
+            content = json.dumps(data, indent=2, ensure_ascii=False)
+            return await FileManager.async_write_file(self.memory_file, content)
         except Exception as e:
-            print(f"Errore nel salvataggio della memoria: {e}")
+            logger.error(f"Errore nel salvataggio della memoria: {e}")
             return False
             
     def add_message(self, user_id: int, role: str, content: str):

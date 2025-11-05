@@ -51,7 +51,7 @@ class TauroBot:
         # Inizializza sistemi
         self.memory = MemorySystem(
             memory_file=os.getenv('MEMORY_FILE', 'memory/conversations.json'),
-            max_size=int(os.getenv('MAX_MEMORY_SIZE', '1000'))
+            max_size=ConfigLoader.get_env_int('MAX_MEMORY_SIZE', 1000)
         )
         
         self.voice = VoiceSystem(
@@ -64,18 +64,22 @@ class TauroBot:
         self.http_client = httpx.AsyncClient(timeout=60.0)
         
         # Admin users
-        admin_ids = os.getenv('ADMIN_USER_IDS', '')
-        self.admin_users = [int(x.strip()) for x in admin_ids.split(',') if x.strip().isdigit()]
+        self.admin_users = ConfigLoader.get_env_list('ADMIN_USER_IDS', item_type=int)
         
     def _load_config(self) -> dict:
         """Carica configurazione da config.yml"""
-        try:
-            if os.path.exists('config.yml'):
+        def load():
+            if FileManager.file_exists('config.yml'):
                 with open('config.yml', 'r', encoding='utf-8') as f:
                     return yaml.safe_load(f) or {}
-        except Exception as e:
-            logger.error(f"Errore nel caricamento config.yml: {e}")
-        return {}
+            return {}
+        
+        return ErrorHandler.safe_execute(
+            load, 
+            default_return={}, 
+            error_message="Errore nel caricamento config.yml",
+            logger_instance=logger
+        )
         
     async def start_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handler per il comando /start"""
@@ -237,14 +241,13 @@ class TauroBot:
             audio_file = f"temp_voice_{user_id}_{datetime.now().timestamp()}.mp3"
             audio_path = await self.voice.text_to_speech(response, audio_file)
             
-            if audio_path and os.path.exists(audio_path):
+            if audio_path and FileManager.file_exists(audio_path):
                 try:
                     with open(audio_path, 'rb') as audio:
                         await update.message.reply_voice(audio)
                 finally:
                     # Pulisci file temporaneo
-                    if os.path.exists(audio_path):
-                        os.remove(audio_path)
+                    FileManager.safe_remove(audio_path)
                         
     async def post_init(self, application: Application):
         """Inizializzazione post-startup"""
