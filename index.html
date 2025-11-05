@@ -1333,6 +1333,9 @@
                     </div>
                     
                     <div class="cta-buttons">
+                        <button id="hero-pwa-btn" class="btn btn-primary" style="display: none;">
+                            📱 Installa come App
+                        </button>
                         <a href="https://t.me/TauroBot" class="btn btn-telegram">💬 Prova su Telegram</a>
                         <a href="https://github.com/Lucifer-AI-666/Taurosweb" class="btn btn-secondary">⭐ GitHub</a>
                         <a href="#" onclick="showPage('features')" class="btn btn-primary">🚀 Funzionalità</a>
@@ -1494,6 +1497,60 @@
                         </div>
                         <p style="margin-top: 1rem; opacity: 0.8; font-size: 0.9rem;">
                             💡 Questa è solo una demo! Per l'esperienza completa, prova il bot reale su Telegram.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PWA Features Section -->
+        <section class="pwa-section" style="padding: 100px 0; background: rgba(102, 126, 234, 0.05);">
+            <div class="container">
+                <h2 class="section-title">📱 Progressive Web App</h2>
+                <p style="text-align: center; font-size: 1.2rem; opacity: 0.9; margin-bottom: 3rem;">
+                    Installa TauroBot come app sul tuo dispositivo per un'esperienza migliore!
+                </p>
+                
+                <div class="features-grid" style="max-width: 900px; margin: 0 auto;">
+                    <div class="feature-card">
+                        <div class="feature-icon">📲</div>
+                        <h3>Installabile</h3>
+                        <p>Aggiungi l'app alla home screen del tuo dispositivo con un solo click</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Veloce</h3>
+                        <p>Caricamento istantaneo grazie alla cache intelligente</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📴</div>
+                        <h3>Offline</h3>
+                        <p>Funziona anche senza connessione internet dopo la prima visita</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔄</div>
+                        <h3>Auto-Update</h3>
+                        <p>Aggiornamenti automatici senza bisogno di reinstallare</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💾</div>
+                        <h3>Leggera</h3>
+                        <p>Nessun download da store, occupa pochissimo spazio</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h3>Nativa</h3>
+                        <p>Si comporta come un'app nativa sul tuo dispositivo</p>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 3rem;">
+                    <button id="pwa-section-btn" class="btn btn-primary" style="display: none;" onclick="handlePWAInstall()">
+                        📱 Installa Ora
+                    </button>
+                    <div id="pwa-installed-msg" style="display: none;">
+                        <p style="font-size: 1.2rem; color: #4ade80;">
+                            ✅ <strong>App già installata!</strong> Grazie per usare TauroBot
                         </p>
                     </div>
                 </div>
@@ -2366,18 +2423,53 @@
             });
         }
         
-        // PWA Install prompt
+        // PWA Install prompt with enhanced interaction
         let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            
-            // Show install button or banner
-            console.log('📱 PWA can be installed');
-            
-            // You can show a custom install button here
-            const installButton = document.createElement('button');
-            installButton.textContent = '📱 Installa App';
+        let installButton;
+        
+        // Check if app is already installed
+        function isPWAInstalled() {
+            return window.matchMedia('(display-mode: standalone)').matches || 
+                   window.navigator.standalone === true;
+        }
+        
+        // Show PWA status indicator
+        function showPWAStatus() {
+            if (isPWAInstalled()) {
+                const statusBanner = document.createElement('div');
+                statusBanner.innerHTML = '✅ App installata!';
+                statusBanner.style.cssText = `
+                    position: fixed;
+                    top: 80px;
+                    right: 20px;
+                    z-index: 1000;
+                    padding: 10px 20px;
+                    background: rgba(74, 222, 128, 0.9);
+                    color: white;
+                    border-radius: 25px;
+                    font-size: 14px;
+                    font-weight: bold;
+                    box-shadow: 0 4px 15px rgba(74, 222, 128, 0.4);
+                    animation: slideInRight 0.5s ease-out;
+                `;
+                document.body.appendChild(statusBanner);
+                
+                // Remove after 5 seconds
+                setTimeout(() => {
+                    statusBanner.style.animation = 'slideOutRight 0.5s ease-out';
+                    setTimeout(() => statusBanner.remove(), 500);
+                }, 5000);
+            }
+        }
+        
+        // Create install button
+        function createInstallButton() {
+            installButton = document.createElement('button');
+            installButton.id = 'pwa-install-btn';
+            installButton.innerHTML = `
+                <span style="font-size: 20px; margin-right: 8px;">📱</span>
+                <span>Installa App</span>
+            `;
             installButton.style.cssText = `
                 position: fixed;
                 bottom: 20px;
@@ -2392,33 +2484,225 @@
                 font-weight: bold;
                 cursor: pointer;
                 box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-                transition: transform 0.2s;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                animation: pulseInstall 2s ease-in-out infinite;
             `;
             
+            // Add hover effect
             installButton.addEventListener('mouseenter', () => {
-                installButton.style.transform = 'scale(1.05)';
+                installButton.style.transform = 'scale(1.05) translateY(-2px)';
+                installButton.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.6)';
             });
             
             installButton.addEventListener('mouseleave', () => {
-                installButton.style.transform = 'scale(1)';
+                installButton.style.transform = 'scale(1) translateY(0)';
+                installButton.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)';
             });
             
+            // Handle click
             installButton.addEventListener('click', async () => {
                 if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    console.log(`User response: ${outcome}`);
+                    // Show loading state
+                    installButton.innerHTML = '<span>Installazione...</span>';
+                    installButton.style.opacity = '0.7';
+                    
+                    try {
+                        deferredPrompt.prompt();
+                        const { outcome } = await deferredPrompt.userChoice;
+                        
+                        if (outcome === 'accepted') {
+                            console.log('✅ User accepted the PWA install');
+                            installButton.innerHTML = '<span>✅ Installata!</span>';
+                            installButton.style.background = 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)';
+                            
+                            setTimeout(() => {
+                                installButton.remove();
+                            }, 2000);
+                        } else {
+                            console.log('❌ User dismissed the PWA install');
+                            installButton.innerHTML = '<span>📱 Installa App</span>';
+                            installButton.style.opacity = '1';
+                        }
+                    } catch (error) {
+                        console.error('Error during install:', error);
+                        installButton.innerHTML = '<span>📱 Installa App</span>';
+                        installButton.style.opacity = '1';
+                    }
+                    
                     deferredPrompt = null;
-                    installButton.remove();
                 }
             });
             
+            // Add animation CSS
+            const animationStyle = document.createElement('style');
+            animationStyle.textContent = `
+                @keyframes pulseInstall {
+                    0%, 100% {
+                        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+                    }
+                    50% {
+                        box-shadow: 0 4px 25px rgba(102, 126, 234, 0.7);
+                    }
+                }
+                @keyframes slideInRight {
+                    from {
+                        transform: translateX(400px);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+                @keyframes slideOutRight {
+                    from {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                    to {
+                        transform: translateX(400px);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(animationStyle);
+            
             document.body.appendChild(installButton);
+        }
+        
+        // Handle PWA install from hero button
+        function handlePWAInstall() {
+            if (deferredPrompt) {
+                const heroPWABtn = document.getElementById('hero-pwa-btn');
+                if (heroPWABtn) {
+                    heroPWABtn.innerHTML = '⏳ Installazione...';
+                    heroPWABtn.disabled = true;
+                }
+                
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('✅ User accepted PWA install from hero');
+                    } else {
+                        console.log('❌ User dismissed PWA install from hero');
+                        if (heroPWABtn) {
+                            heroPWABtn.innerHTML = '📱 Installa come App';
+                            heroPWABtn.disabled = false;
+                        }
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+        
+        // Listen for beforeinstallprompt event
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            console.log('📱 PWA installation available');
+            
+            // Show hero PWA button
+            const heroPWABtn = document.getElementById('hero-pwa-btn');
+            if (heroPWABtn) {
+                heroPWABtn.style.display = 'inline-block';
+                heroPWABtn.addEventListener('click', handlePWAInstall);
+            }
+            
+            // Show PWA section button
+            const pwaSectionBtn = document.getElementById('pwa-section-btn');
+            if (pwaSectionBtn) {
+                pwaSectionBtn.style.display = 'inline-block';
+            }
+            
+            // Create and show floating install button
+            createInstallButton();
         });
         
+        // Handle successful installation
         window.addEventListener('appinstalled', () => {
             console.log('✅ PWA installed successfully!');
             deferredPrompt = null;
+            
+            // Remove install button if it exists
+            if (installButton) {
+                installButton.remove();
+            }
+            
+            // Hide hero PWA button
+            const heroPWABtn = document.getElementById('hero-pwa-btn');
+            if (heroPWABtn) {
+                heroPWABtn.style.display = 'none';
+            }
+            
+            // Show success message
+            const successBanner = document.createElement('div');
+            successBanner.innerHTML = '🎉 App installata con successo!';
+            successBanner.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 10000;
+                padding: 25px 40px;
+                background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+                color: white;
+                border-radius: 20px;
+                font-size: 20px;
+                font-weight: bold;
+                box-shadow: 0 10px 40px rgba(74, 222, 128, 0.5);
+                animation: successPop 0.5s ease-out;
+            `;
+            document.body.appendChild(successBanner);
+            
+            setTimeout(() => {
+                successBanner.style.animation = 'fadeOut 0.5s ease-out';
+                setTimeout(() => successBanner.remove(), 500);
+            }, 3000);
+        });
+        
+        // Add success animation CSS
+        const successStyle = document.createElement('style');
+        successStyle.textContent = `
+            @keyframes successPop {
+                0% {
+                    transform: translate(-50%, -50%) scale(0);
+                    opacity: 0;
+                }
+                50% {
+                    transform: translate(-50%, -50%) scale(1.1);
+                }
+                100% {
+                    transform: translate(-50%, -50%) scale(1);
+                    opacity: 1;
+                }
+            }
+            @keyframes fadeOut {
+                from {
+                    opacity: 1;
+                    transform: translate(-50%, -50%) scale(1);
+                }
+                to {
+                    opacity: 0;
+                    transform: translate(-50%, -50%) scale(0.8);
+                }
+            }
+        `;
+        document.head.appendChild(successStyle);
+        
+        // Check and show PWA status on load
+        window.addEventListener('load', () => {
+            showPWAStatus();
+            
+            // Check if PWA is already installed and update UI
+            if (isPWAInstalled()) {
+                const pwaInstalledMsg = document.getElementById('pwa-installed-msg');
+                if (pwaInstalledMsg) {
+                    pwaInstalledMsg.style.display = 'block';
+                }
+            }
         });
     </script>
 </body>
