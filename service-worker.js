@@ -42,40 +42,65 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Intercettazione richieste (strategia Cache First)
+// Intercettazione richieste (strategia Cache First con timeout)
 self.addEventListener('fetch', event => {
+  const { request } = event;
+  
+  // Skip non-GET requests
+  if (request.method !== 'GET') {
+    return;
+  }
+  
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
+    caches.match(request)
+      .then(cachedResponse => {
         // Cache hit - ritorna la risposta dalla cache
-        if (response) {
-          return response;
+        if (cachedResponse) {
+          // Stale-while-revalidate: return cache immediately, update in background
+          const fetchPromise = fetch(request).then(response => {
+            if (response && response.status === 200 && response.type === 'basic') {
+              const responseToCache = response.clone();
+              caches.open(CACHE_NAME).then(cache => {
+                cache.put(request, responseToCache);
+              });
+            }
+          }).catch(() => {}); // Ignore background update errors
+          
+          return cachedResponse;
         }
 
-        // Clone della richiesta
-        const fetchRequest = event.request.clone();
+        // No cache - fetch with timeout
+        return fetchWithTimeout(request, 5000)
+          .then(response => {
+            // Verifica che la risposta sia valida
+            if (!response || response.status !== 200 || response.type !== 'basic') {
+              return response;
+            }
 
-        return fetch(fetchRequest).then(response => {
-          // Verifica che la risposta sia valida
-          if (!response || response.status !== 200 || response.type !== 'basic') {
+            // Clone e cache della risposta
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(request, responseToCache);
+            });
+
             return response;
-          }
-
-          // Clone della risposta
-          const responseToCache = response.clone();
-
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, responseToCache);
+          }).catch(() => {
+            // Fallback offline
+            return caches.match('/index.html');
           });
-
-          return response;
-        }).catch(() => {
-          // Fallback offline
-          return caches.match('/index.html');
-        });
       })
   );
 });
+
+// Helper: fetch with timeout
+function fetchWithTimeout(request, timeout = 5000) {
+  return Promise.race([
+    fetch(request),
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Timeout')), timeout)
+    )
+  ]);
+}
 
 // Gestione messaggi dal client
 self.addEventListener('message', event => {
