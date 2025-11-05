@@ -247,7 +247,7 @@ class DateTimeHelper:
         return datetime.now().timestamp()
     
     @staticmethod
-    def timestamp_to_datetime(timestamp_str: str):
+    def timestamp_to_datetime(timestamp_str: str) -> datetime:
         """
         Convert ISO timestamp string to datetime
         
