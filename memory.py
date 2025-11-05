@@ -5,7 +5,7 @@ Gestisce la memorizzazione delle conversazioni e del contesto
 
 import json
 import os
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 from utils import FileManager, DateTimeHelper, get_logger
 
@@ -112,7 +112,6 @@ class MemorySystem:
         
     def cleanup_old_conversations(self, days: int = 30):
         """Rimuove conversazioni vecchie"""
-        from datetime import datetime
         cutoff_date = datetime.now() - timedelta(days=days)
         users_to_remove = []
         
