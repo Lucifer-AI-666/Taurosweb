@@ -238,7 +238,7 @@ class TauroBot:
             await update.message.chat.send_action("record_voice")
             
             # Genera file audio
-            audio_file = f"temp_voice_{user_id}_{datetime.now().timestamp()}.mp3"
+            audio_file = f"temp_voice_{user_id}_{DateTimeHelper.get_unix_timestamp()}.mp3"
             audio_path = await self.voice.text_to_speech(response, audio_file)
             
             if audio_path and FileManager.file_exists(audio_path):

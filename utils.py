@@ -222,6 +222,46 @@ class ConfigLoader:
             return []
 
 
+class DateTimeHelper:
+    """Centralized datetime operations"""
+    
+    @staticmethod
+    def get_timestamp() -> str:
+        """
+        Get current timestamp as ISO format string
+        
+        Returns:
+            ISO format timestamp string
+        """
+        from datetime import datetime
+        return datetime.now().isoformat()
+    
+    @staticmethod
+    def get_unix_timestamp() -> float:
+        """
+        Get current Unix timestamp
+        
+        Returns:
+            Unix timestamp as float
+        """
+        from datetime import datetime
+        return datetime.now().timestamp()
+    
+    @staticmethod
+    def timestamp_to_datetime(timestamp_str: str):
+        """
+        Convert ISO timestamp string to datetime
+        
+        Args:
+            timestamp_str: ISO format timestamp string
+            
+        Returns:
+            datetime object
+        """
+        from datetime import datetime
+        return datetime.fromisoformat(timestamp_str)
+
+
 def get_logger(name: str) -> logging.Logger:
     """
     Get a configured logger instance

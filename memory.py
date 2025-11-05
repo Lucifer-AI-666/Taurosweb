@@ -5,9 +5,9 @@ Gestisce la memorizzazione delle conversazioni e del contesto
 
 import json
 import os
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import Dict, List, Optional
-from utils import FileManager, get_logger
+from utils import FileManager, DateTimeHelper, get_logger
 
 logger = get_logger(__name__)
 
@@ -52,7 +52,7 @@ class MemorySystem:
             # Salva i dati
             data = {
                 'conversations': {str(k): v for k, v in self.conversations.items()},
-                'last_updated': datetime.now().isoformat()
+                'last_updated': DateTimeHelper.get_timestamp()
             }
             
             content = json.dumps(data, indent=2, ensure_ascii=False)
@@ -69,7 +69,7 @@ class MemorySystem:
         message = {
             'role': role,
             'content': content,
-            'timestamp': datetime.now().isoformat()
+            'timestamp': DateTimeHelper.get_timestamp()
         }
         
         self.conversations[user_id].append(message)
@@ -112,12 +112,13 @@ class MemorySystem:
         
     def cleanup_old_conversations(self, days: int = 30):
         """Rimuove conversazioni vecchie"""
+        from datetime import datetime
         cutoff_date = datetime.now() - timedelta(days=days)
         users_to_remove = []
         
         for user_id, messages in self.conversations.items():
             if messages:
-                last_message_time = datetime.fromisoformat(messages[-1]['timestamp'])
+                last_message_time = DateTimeHelper.timestamp_to_datetime(messages[-1]['timestamp'])
                 if last_message_time < cutoff_date:
                     users_to_remove.append(user_id)
                     
