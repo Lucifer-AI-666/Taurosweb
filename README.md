@@ -13,6 +13,7 @@ Taurosweb è il sito ufficiale di **TauroBot 3.0 Ultimate**, un bot AI avanzato 
 - **Sintesi vocale:** Supporto per la conversione testo-voce per risposte vocali.
 - **Anima hacker:** Funzionalità avanzate e personalizzabili per utenti esperti.
 - **Compatibilità Telegram:** Facile integrazione e utilizzo tramite la piattaforma Telegram.
+- **📱 Progressive Web App (PWA):** Installabile su Android, iOS e Desktop come app nativa!
 
 ---
 
@@ -106,6 +107,31 @@ Esegui i test per verificare l'installazione:
 python test_bot.py
 ```
 
+### 📱 Progressive Web App (PWA)
+L'interfaccia web può essere installata come app su qualsiasi dispositivo!
+
+**Quick Start PWA:**
+```bash
+# 1. Genera le icone (già fatto)
+python generate_pwa_icons.py
+
+# 2. Servi il sito con HTTPS (richiesto per PWA)
+# Opzione A: Deploy su GitHub Pages (consigliato)
+# Opzione B: Usa server HTTPS locale per test
+
+# 3. Apri index.html nel browser
+# 4. Clicca sul pulsante "📱 Installa App"
+```
+
+**Funzionalità PWA:**
+- ✅ Installabile su Android, iOS, Desktop
+- ✅ Funziona offline dopo prima visita
+- ✅ Icona dedicata sulla home screen
+- ✅ Splash screen al lancio
+- ✅ Aggiornamenti automatici
+
+Per istruzioni dettagliate, vedi [PWA_INSTALL.md](PWA_INSTALL.md)
+
 ---
 
 ## Struttura del Progetto
@@ -122,10 +148,16 @@ Taurosweb/
 ├── .gitignore                  # File esclusi da git
 ├── README.md                   # Questo file
 ├── INSTALL.md                  # Guida installazione dettagliata
+├── PWA_INSTALL.md              # Guida installazione PWA
 ├── LICENSE                     # Licenza MIT
 ├── SECURITY.md                 # Policy di sicurezza
+├── index.html                  # Interfaccia web PWA
+├── manifest.json               # PWA manifest
+├── service-worker.js           # Service worker per PWA
+├── generate_pwa_icons.py       # Generatore icone PWA
+├── icons/                      # Icone PWA (SVG)
 ├── MessageEvent.js             # Componente React Native
-├── remixed-daaaa90c (10).html  # Interfaccia web
+├── remixed-daaaa90c (10).html  # Interfaccia web originale
 └── AnouarLauncher[1].apk       # APK Android (placeholder)
 ```
 
