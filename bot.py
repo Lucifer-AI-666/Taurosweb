@@ -240,8 +240,13 @@ class TauroBot:
             
             if audio_path and os.path.exists(audio_path):
                 try:
-                    with open(audio_path, 'rb') as audio:
-                        await update.message.reply_voice(audio)
+                    # Use async file operations for better performance
+                    import aiofiles
+                    async with aiofiles.open(audio_path, 'rb') as audio:
+                        audio_data = await audio.read()
+                        # Create BytesIO for telegram API
+                        from io import BytesIO
+                        await update.message.reply_voice(BytesIO(audio_data))
                 finally:
                     # Pulisci file temporaneo
                     if os.path.exists(audio_path):
