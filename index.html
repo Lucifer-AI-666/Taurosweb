@@ -2510,10 +2510,13 @@
                     installButton.style.opacity = '0.7';
                     
                     try {
-                        deferredPrompt.prompt();
-                        const { outcome } = await deferredPrompt.userChoice;
+                        await deferredPrompt.prompt();
+                        const choiceResult = await deferredPrompt.userChoice.catch(err => {
+                            console.error('Error getting user choice:', err);
+                            return { outcome: 'dismissed' };
+                        });
                         
-                        if (outcome === 'accepted') {
+                        if (choiceResult.outcome === 'accepted') {
                             console.log('✅ User accepted the PWA install');
                             installButton.innerHTML = '<span>✅ Installata!</span>';
                             installButton.style.background = 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)';
@@ -2536,45 +2539,48 @@
                 }
             });
             
-            // Add animation CSS
-            const animationStyle = document.createElement('style');
-            animationStyle.textContent = `
-                @keyframes pulseInstall {
-                    0%, 100% {
-                        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            // Add animation CSS (only once)
+            if (!document.getElementById('pwa-animations-style')) {
+                const animationStyle = document.createElement('style');
+                animationStyle.id = 'pwa-animations-style';
+                animationStyle.textContent = `
+                    @keyframes pulseInstall {
+                        0%, 100% {
+                            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+                        }
+                        50% {
+                            box-shadow: 0 4px 25px rgba(102, 126, 234, 0.7);
+                        }
                     }
-                    50% {
-                        box-shadow: 0 4px 25px rgba(102, 126, 234, 0.7);
+                    @keyframes slideInRight {
+                        from {
+                            transform: translateX(400px);
+                            opacity: 0;
+                        }
+                        to {
+                            transform: translateX(0);
+                            opacity: 1;
+                        }
                     }
-                }
-                @keyframes slideInRight {
-                    from {
-                        transform: translateX(400px);
-                        opacity: 0;
+                    @keyframes slideOutRight {
+                        from {
+                            transform: translateX(0);
+                            opacity: 1;
+                        }
+                        to {
+                            transform: translateX(400px);
+                            opacity: 0;
+                        }
                     }
-                    to {
-                        transform: translateX(0);
-                        opacity: 1;
-                    }
-                }
-                @keyframes slideOutRight {
-                    from {
-                        transform: translateX(0);
-                        opacity: 1;
-                    }
-                    to {
-                        transform: translateX(400px);
-                        opacity: 0;
-                    }
-                }
-            `;
-            document.head.appendChild(animationStyle);
+                `;
+                document.head.appendChild(animationStyle);
+            }
             
             document.body.appendChild(installButton);
         }
         
         // Handle PWA install from hero button
-        function handlePWAInstall() {
+        async function handlePWAInstall() {
             if (deferredPrompt) {
                 const heroPWABtn = document.getElementById('hero-pwa-btn');
                 if (heroPWABtn) {
@@ -2582,8 +2588,13 @@
                     heroPWABtn.disabled = true;
                 }
                 
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
+                try {
+                    await deferredPrompt.prompt();
+                    const choiceResult = await deferredPrompt.userChoice.catch(err => {
+                        console.error('Error getting user choice:', err);
+                        return { outcome: 'dismissed' };
+                    });
+                    
                     if (choiceResult.outcome === 'accepted') {
                         console.log('✅ User accepted PWA install from hero');
                     } else {
@@ -2594,7 +2605,13 @@
                         }
                     }
                     deferredPrompt = null;
-                });
+                } catch (error) {
+                    console.error('Error during PWA install:', error);
+                    if (heroPWABtn) {
+                        heroPWABtn.innerHTML = '📱 Installa come App';
+                        heroPWABtn.disabled = false;
+                    }
+                }
             }
         }
         
@@ -2606,9 +2623,10 @@
             
             // Show hero PWA button
             const heroPWABtn = document.getElementById('hero-pwa-btn');
-            if (heroPWABtn) {
+            if (heroPWABtn && !heroPWABtn.dataset.listenerAdded) {
                 heroPWABtn.style.display = 'inline-block';
                 heroPWABtn.addEventListener('click', handlePWAInstall);
+                heroPWABtn.dataset.listenerAdded = 'true';
             }
             
             // Show PWA section button
@@ -2663,34 +2681,37 @@
             }, 3000);
         });
         
-        // Add success animation CSS
-        const successStyle = document.createElement('style');
-        successStyle.textContent = `
-            @keyframes successPop {
-                0% {
-                    transform: translate(-50%, -50%) scale(0);
-                    opacity: 0;
+        // Add success animation CSS (only once)
+        if (!document.getElementById('pwa-success-style')) {
+            const successStyle = document.createElement('style');
+            successStyle.id = 'pwa-success-style';
+            successStyle.textContent = `
+                @keyframes successPop {
+                    0% {
+                        transform: translate(-50%, -50%) scale(0);
+                        opacity: 0;
+                    }
+                    50% {
+                        transform: translate(-50%, -50%) scale(1.1);
+                    }
+                    100% {
+                        transform: translate(-50%, -50%) scale(1);
+                        opacity: 1;
+                    }
                 }
-                50% {
-                    transform: translate(-50%, -50%) scale(1.1);
+                @keyframes fadeOut {
+                    from {
+                        opacity: 1;
+                        transform: translate(-50%, -50%) scale(1);
+                    }
+                    to {
+                        opacity: 0;
+                        transform: translate(-50%, -50%) scale(0.8);
+                    }
                 }
-                100% {
-                    transform: translate(-50%, -50%) scale(1);
-                    opacity: 1;
-                }
-            }
-            @keyframes fadeOut {
-                from {
-                    opacity: 1;
-                    transform: translate(-50%, -50%) scale(1);
-                }
-                to {
-                    opacity: 0;
-                    transform: translate(-50%, -50%) scale(0.8);
-                }
-            }
-        `;
-        document.head.appendChild(successStyle);
+            `;
+            document.head.appendChild(successStyle);
+        }
         
         // Check and show PWA status on load
         window.addEventListener('load', () => {
