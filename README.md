@@ -129,8 +129,12 @@ python generate_pwa_icons.py
 - ✅ Icona dedicata sulla home screen
 - ✅ Splash screen al lancio
 - ✅ Aggiornamenti automatici
+- ✅ Pulsanti di installazione interattivi
+- ✅ Feedback visivo e animazioni
 
-Per istruzioni dettagliate, vedi [PWA_INSTALL.md](PWA_INSTALL.md)
+**Documentazione PWA:**
+- 📖 [Guida Installazione PWA](PWA_INSTALL.md) - Come installare e configurare
+- 🎯 [Guida Interazione PWA](PWA_INTERACTION_GUIDE.md) - Come interagire con l'app installata
 
 ---
 
