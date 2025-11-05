@@ -23,6 +23,7 @@ import httpx
 
 from memory import MemorySystem
 from voice import VoiceSystem
+from utils import ConfigLoader, FileManager, ErrorHandler, DateTimeHelper, get_logger
 
 
 # Configurazione logging
@@ -30,7 +31,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class TauroBot:
