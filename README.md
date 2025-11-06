@@ -155,10 +155,7 @@ Taurosweb/
 ├── manifest.json               # PWA manifest
 ├── service-worker.js           # Service worker per PWA
 ├── generate_pwa_icons.py       # Generatore icone PWA
-├── icons/                      # Icone PWA (SVG)
-├── MessageEvent.js             # Componente React Native
-├── remixed-daaaa90c (10).html  # Interfaccia web originale
-└── AnouarLauncher[1].apk       # APK Android (placeholder)
+└── icons/                      # Icone PWA (SVG)
 ```
 
 ---
