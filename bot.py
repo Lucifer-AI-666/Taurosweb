@@ -8,6 +8,7 @@ import logging
 import asyncio
 from datetime import datetime
 from typing import Optional
+from io import BytesIO
 import yaml
 from dotenv import load_dotenv
 
@@ -20,6 +21,7 @@ from telegram.ext import (
     filters
 )
 import httpx
+import aiofiles
 
 from memory import MemorySystem
 from voice import VoiceSystem
@@ -171,9 +173,9 @@ class TauroBot:
                           "Rispondi in italiano in modo chiaro e utile."
             })
             
-            # Aggiungi contesto se disponibile
+            # Aggiungi contesto se disponibile (already limited by get_conversation)
             if context_messages:
-                for msg in context_messages[-5:]:  # Ultimi 5 messaggi
+                for msg in context_messages:
                     messages.append({
                         "role": msg['role'],
                         "content": msg['content']
@@ -209,22 +211,23 @@ class TauroBot:
         user_message = update.message.text
         
         # Salva messaggio utente in memoria
-        self.memory.add_message(user_id, "user", user_message)
+        should_save = self.memory.add_message(user_id, "user", user_message)
         
         # Mostra "sta scrivendo..."
         await update.message.chat.send_action("typing")
         
-        # Ottieni contesto conversazione
+        # Ottieni contesto conversazione (limit already handled by get_conversation)
         context_messages = self.memory.get_conversation(user_id, limit=10)
         
         # Interroga Ollama
         response = await self.query_ollama(user_message, context_messages)
         
         # Salva risposta in memoria
-        self.memory.add_message(user_id, "assistant", response)
+        should_save = self.memory.add_message(user_id, "assistant", response) or should_save
         
-        # Salva memoria
-        await self.memory.save_memory()
+        # Salva memoria solo se necessario (batch saving)
+        if should_save:
+            await self.memory.save_memory()
         
         # Invia risposta testuale
         await update.message.reply_text(response)
@@ -239,6 +242,7 @@ class TauroBot:
             
             if audio_path and os.path.exists(audio_path):
                 try:
+                    # Open file for streaming to avoid loading entire file in memory
                     with open(audio_path, 'rb') as audio:
                         await update.message.reply_voice(audio)
                 finally:

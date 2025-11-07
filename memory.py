@@ -13,15 +13,19 @@ import aiofiles
 class MemorySystem:
     """Gestisce la memoria persistente del bot"""
     
-    def __init__(self, memory_file: str = "memory/conversations.json", max_size: int = 1000):
+    def __init__(self, memory_file: str = "memory/conversations.json", max_size: int = 1000, save_interval: int = 5):
         self.memory_file = memory_file
         self.max_size = max_size
+        self.save_interval = save_interval  # Save every N messages
         self.conversations: Dict[int, List[Dict]] = {}
+        self._message_count = 0  # Counter for batch saving
         self._ensure_directory()
         
     def _ensure_directory(self):
         """Crea la directory memory se non esiste"""
-        os.makedirs(os.path.dirname(self.memory_file), exist_ok=True)
+        directory = os.path.dirname(self.memory_file)
+        if directory:  # Only create if there's a directory component
+            os.makedirs(directory, exist_ok=True)
         
     async def load_memory(self) -> bool:
         """Carica la memoria dal file"""
@@ -40,13 +44,10 @@ class MemorySystem:
         
     async def save_memory(self) -> bool:
         """Salva la memoria sul file"""
+        temp_file = f"{self.memory_file}.tmp"
         try:
-            # Crea un backup
-            if os.path.exists(self.memory_file):
-                backup_file = f"{self.memory_file}.bak"
-                if os.path.exists(backup_file):
-                    os.remove(backup_file)
-                os.rename(self.memory_file, backup_file)
+            # Reset counter
+            self._message_count = 0
             
             # Salva i dati
             data = {
@@ -54,15 +55,35 @@ class MemorySystem:
                 'last_updated': datetime.now().isoformat()
             }
             
-            async with aiofiles.open(self.memory_file, 'w', encoding='utf-8') as f:
+            # Write to temporary file first, then atomic rename for safety
+            async with aiofiles.open(temp_file, 'w', encoding='utf-8') as f:
                 await f.write(json.dumps(data, indent=2, ensure_ascii=False))
+            
+            # Atomic rename (backup only on first write)
+            if os.path.exists(self.memory_file) and not os.path.exists(f"{self.memory_file}.bak"):
+                # Create backup only once
+                import shutil
+                shutil.copy2(self.memory_file, f"{self.memory_file}.bak")
+            
+            os.replace(temp_file, self.memory_file)
             return True
         except Exception as e:
             print(f"Errore nel salvataggio della memoria: {e}")
+            # Cleanup temp file if exists
+            if os.path.exists(temp_file):
+                try:
+                    os.remove(temp_file)
+                except:
+                    pass
             return False
             
-    def add_message(self, user_id: int, role: str, content: str):
-        """Aggiunge un messaggio alla conversazione"""
+    def add_message(self, user_id: int, role: str, content: str) -> bool:
+        """
+        Aggiunge un messaggio alla conversazione
+        
+        Returns:
+            bool: True if should save (batch interval reached), False otherwise
+        """
         if user_id not in self.conversations:
             self.conversations[user_id] = []
             
@@ -76,7 +97,12 @@ class MemorySystem:
         
         # Limita la dimensione della memoria
         if len(self.conversations[user_id]) > self.max_size:
+            # Keep only the most recent messages (efficient slicing)
             self.conversations[user_id] = self.conversations[user_id][-self.max_size:]
+        
+        # Increment counter and check if should save
+        self._message_count += 1
+        return self._message_count >= self.save_interval
             
     def get_conversation(self, user_id: int, limit: Optional[int] = None) -> List[Dict]:
         """Recupera la conversazione di un utente"""

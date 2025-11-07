@@ -7,7 +7,18 @@ import pyttsx3
 import os
 from typing import Optional
 import asyncio
+import atexit
 from concurrent.futures import ThreadPoolExecutor
+
+# Shared thread pool for all VoiceSystem instances
+_SHARED_EXECUTOR = ThreadPoolExecutor(max_workers=2, thread_name_prefix="tts")
+
+# Register cleanup function to shutdown executor on exit
+def _cleanup_executor():
+    """Cleanup shared executor on application exit"""
+    _SHARED_EXECUTOR.shutdown(wait=True, cancel_futures=False)
+
+atexit.register(_cleanup_executor)
 
 
 class VoiceSystem:
@@ -17,8 +28,9 @@ class VoiceSystem:
         self.language = language
         self.rate = rate
         self.volume = volume
-        self.executor = ThreadPoolExecutor(max_workers=2)
+        self.executor = _SHARED_EXECUTOR  # Use shared executor
         self._engine = None
+        self._engine_lock = asyncio.Lock()  # Lock for thread-safe engine access
         
     def _init_engine(self):
         """Inizializza il motore TTS"""
@@ -92,7 +104,7 @@ class VoiceSystem:
                 self._engine.stop()
             except:
                 pass
-        self.executor.shutdown(wait=False)
+        # Don't shutdown shared executor, it's managed globally
         
     def __del__(self):
         """Distruttore"""
