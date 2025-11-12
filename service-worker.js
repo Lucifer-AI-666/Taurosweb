@@ -3,13 +3,19 @@
  * Gestisce cache e funzionalità offline
  */
 
-const CACHE_NAME = 'taurobot-v1.0.0';
+const CACHE_NAME = 'taurobot-v1.1.0';
 const urlsToCache = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png'
+  '/icons/icon-72x72.svg',
+  '/icons/icon-96x96.svg',
+  '/icons/icon-128x128.svg',
+  '/icons/icon-144x144.svg',
+  '/icons/icon-152x152.svg',
+  '/icons/icon-192x192.svg',
+  '/icons/icon-384x384.svg',
+  '/icons/icon-512x512.svg'
 ];
 
 // Installazione Service Worker
@@ -88,8 +94,8 @@ self.addEventListener('message', event => {
 self.addEventListener('push', event => {
   const options = {
     body: event.data ? event.data.text() : 'Nuovo messaggio da TauroBot',
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/icon-72x72.png',
+    icon: '/icons/icon-192x192.svg',
+    badge: '/icons/icon-72x72.svg',
     vibrate: [200, 100, 200],
     tag: 'taurobot-notification'
   };
