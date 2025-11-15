@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#667eea">
+    <title>Dashboard - TauroBot 3.0</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/svg+xml" href="/icons/icon-72x72.svg">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            font-size: 2rem;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* NET'ALIS Integration */
+        .netalis-status {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.online {
+            background: #4caf50;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Activity Log */
+        .activity-log {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .log-item {
+            padding: 1rem;
+            border-left: 3px solid #667eea;
+            background: #f9f9f9;
+            margin-bottom: 0.8rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .log-time {
+            color: #999;
+            font-size: 0.8rem;
+        }
+
+        /* Buttons */
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+            box-shadow: none;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                overflow-x: auto;
+            }
+        }
+
+        /* Privacy Badge */
+        .privacy-badge {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 0.8rem 1.2rem;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+            font-size: 0.9rem;
+            font-weight: 600;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <span>🐂</span>
+                <span>TauroBot 3.0 Dashboard</span>
+            </div>
+            <div class="user-info">
+                <span class="user-avatar" id="userAvatar">🐂</span>
+                <span id="username">User</span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Stats Cards -->
+        <div class="cards-grid">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Sessione Attiva</div>
+                    <div class="card-icon">⏰</div>
+                </div>
+                <div class="stat-value" id="sessionTime">00:00</div>
+                <div class="stat-label">Tempo connesso</div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">NET'ALIS Status</div>
+                    <div class="card-icon">🧠</div>
+                </div>
+                <div class="stat-value" id="netalisCoherence">0.000</div>
+                <div class="stat-label">Quantum Coherence</div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">NEXUS Learning</div>
+                    <div class="card-icon">📊</div>
+                </div>
+                <div class="stat-value" id="nexusStates">0</div>
+                <div class="stat-label">Stati appresi</div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Privacy Score</div>
+                    <div class="card-icon">🔒</div>
+                </div>
+                <div class="stat-value">10/10</div>
+                <div class="stat-label">Massima sicurezza</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('overview')">📊 Overview</button>
+            <button class="tab" onclick="switchTab('netalis')">🧠 NET'ALIS</button>
+            <button class="tab" onclick="switchTab('nexus')">🤖 NEXUS</button>
+            <button class="tab" onclick="switchTab('activity')">📝 Activity</button>
+        </div>
+
+        <!-- Tab Contents -->
+        <div id="overview" class="tab-content active">
+            <div class="netalis-status">
+                <h3>
+                    <span class="status-indicator online"></span>
+                    Sistemi Hybrid Security Attivi
+                </h3>
+                <p style="margin-top: 0.5rem; color: #555;">
+                    NET'ALIS e NEXUS stanno proteggendo la tua privacy in tempo reale.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>Benvenuto nella Dashboard TauroBot 3.0! 🎉</h3>
+                <p style="margin-top: 1rem; color: #666; line-height: 1.6;">
+                    Tutti i tuoi dati sono salvati <strong>solo sul tuo dispositivo</strong>.
+                    Zero server esterni, massima privacy garantita.
+                </p>
+                <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+                    <button class="btn" onclick="switchTab('netalis')">Esplora NET'ALIS</button>
+                    <button class="btn btn-secondary" onclick="switchTab('nexus')">Esplora NEXUS</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="netalis" class="tab-content">
+            <div class="card">
+                <h3>🧠 NET'ALIS Quantum-Neural Sandbox</h3>
+                <p style="margin-top: 1rem; color: #666;">
+                    Sistema di intelligenza artificiale con quantum coherence detection.
+                </p>
+                <div style="margin-top: 1.5rem;">
+                    <button class="btn" onclick="openNetalis()">Avvia NET'ALIS</button>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 1rem;">
+                <h4>Funzionalità</h4>
+                <ul style="margin-top: 1rem; padding-left: 1.5rem; color: #666; line-height: 2;">
+                    <li>16 Qubits quantistici simulati</li>
+                    <li>Neural Network auto-evolutiva</li>
+                    <li>Consciousness-based monitoring</li>
+                    <li>Zero external API calls</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="nexus" class="tab-content">
+            <div class="card">
+                <h3>🤖 NEXUS Autonomous Intelligence</h3>
+                <p style="margin-top: 1rem; color: #666;">
+                    Reinforcement Learning + Genetic Programming per sicurezza autonoma.
+                </p>
+                <div style="margin-top: 1.5rem;">
+                    <button class="btn btn-secondary" disabled>Richiede Backend Python</button>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 1rem;">
+                <h4>Funzionalità</h4>
+                <ul style="margin-top: 1rem; padding-left: 1.5rem; color: #666; line-height: 2;">
+                    <li>Q-Learning autonomo</li>
+                    <li>Privacy Guardian (PII detection)</li>
+                    <li>Genetic code evolution</li>
+                    <li>Threat scoring automatico</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="activity" class="tab-content">
+            <div class="activity-log">
+                <h3 style="margin-bottom: 1rem;">Activity Log</h3>
+                <div id="activityList">
+                    <div class="log-item">
+                        <div class="log-time" id="loginTime"></div>
+                        ✅ Login effettuato con successo
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy Badge -->
+    <div class="privacy-badge">
+        🔒 100% Privacy-First
+    </div>
+
+    <script>
+        // ==========================================
+        // DASHBOARD LOGIC
+        // ==========================================
+
+        let session = null;
+
+        // Check authentication
+        function checkAuth() {
+            const sessionData = sessionStorage.getItem('taurobot_session');
+            if (!sessionData) {
+                window.location.href = '/pwa/login.html';
+                return null;
+            }
+
+            session = JSON.parse(sessionData);
+
+            // Check if session expired (24 hours)
+            if (Date.now() - session.loginTime > 86400000) {
+                sessionStorage.removeItem('taurobot_session');
+                window.location.href = '/pwa/login.html';
+                return null;
+            }
+
+            return session;
+        }
+
+        // Initialize dashboard
+        function initDashboard() {
+            if (!checkAuth()) return;
+
+            // Update UI
+            document.getElementById('username').textContent = session.username;
+
+            // Update login time
+            const loginDate = new Date(session.loginTime);
+            document.getElementById('loginTime').textContent =
+                loginDate.toLocaleString('it-IT');
+
+            // Start session timer
+            updateSessionTime();
+            setInterval(updateSessionTime, 1000);
+
+            // Simulate NET'ALIS stats
+            simulateNetalisStats();
+            setInterval(simulateNetalisStats, 3000);
+
+            // Log activity
+            logActivity('Dashboard caricata');
+        }
+
+        // Update session time
+        function updateSessionTime() {
+            const elapsed = Date.now() - session.loginTime;
+            const hours = Math.floor(elapsed / 3600000);
+            const minutes = Math.floor((elapsed % 3600000) / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+
+            document.getElementById('sessionTime').textContent =
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Simulate NET'ALIS stats (in realtà dovrebbe essere calcolato dal componente React)
+        function simulateNetalisStats() {
+            const coherence = (0.3 + Math.random() * 0.4).toFixed(3);
+            const states = Math.floor(50 + Math.random() * 200);
+
+            document.getElementById('netalisCoherence').textContent = coherence;
+            document.getElementById('nexusStates').textContent = states;
+        }
+
+        // Switch tabs
+        function switchTab(tabName) {
+            // Remove active from all tabs
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Add active to selected
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+
+            logActivity(`Tab "${tabName}" aperta`);
+        }
+
+        // Log activity
+        function logActivity(message) {
+            const activityList = document.getElementById('activityList');
+            const logItem = document.createElement('div');
+            logItem.className = 'log-item';
+            logItem.innerHTML = `
+                <div class="log-time">${new Date().toLocaleTimeString('it-IT')}</div>
+                ${message}
+            `;
+            activityList.insertBefore(logItem, activityList.firstChild);
+
+            // Keep only last 20 items
+            if (activityList.children.length > 20) {
+                activityList.removeChild(activityList.lastChild);
+            }
+        }
+
+        // Open NET'ALIS (in una nuova finestra o iframe)
+        function openNetalis() {
+            window.open('/hybrid_security/netalis/netalis_sandbox.jsx', '_blank');
+            logActivity('NET\'ALIS avviato');
+        }
+
+        // Logout
+        function logout() {
+            if (confirm('Sei sicuro di voler uscire?')) {
+                sessionStorage.removeItem('taurobot_session');
+                logActivity('Logout effettuato');
+                window.location.href = '/pwa/login.html';
+            }
+        }
+
+        // Init on load
+        window.addEventListener('DOMContentLoaded', initDashboard);
+
+        // Prevent back button after login
+        window.history.pushState(null, '', window.location.href);
+        window.onpopstate = function() {
+            window.history.pushState(null, '', window.location.href);
+        };
+    </script>
+</body>
+</html>

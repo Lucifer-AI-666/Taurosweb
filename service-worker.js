@@ -3,13 +3,17 @@
  * Gestisce cache e funzionalità offline
  */
 
-const CACHE_NAME = 'taurobot-v1.0.0';
+const CACHE_NAME = 'taurobot-v2.0.0-pwa';
 const urlsToCache = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png'
+  '/pwa/login.html',
+  '/pwa/dashboard.html',
+  '/icons/icon-72x72.svg',
+  '/icons/icon-192x192.svg',
+  '/icons/icon-512x512.svg',
+  '/hybrid_security/netalis/netalis_sandbox.jsx'
 ];
 
 // Installazione Service Worker
@@ -70,8 +74,8 @@ self.addEventListener('fetch', event => {
 
           return response;
         }).catch(() => {
-          // Fallback offline
-          return caches.match('/index.html');
+          // Fallback offline - redirect to login
+          return caches.match('/pwa/login.html');
         });
       })
   );

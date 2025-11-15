@@ -2,7 +2,7 @@
   "name": "TauroBot 3.0 Ultimate",
   "short_name": "TauroBot",
   "description": "Bot AI avanzato per Telegram con memoria, sintesi vocale e anima hacker",
-  "start_url": "/index.html",
+  "start_url": "/pwa/login.html",
   "display": "standalone",
   "background_color": "#1a1a2e",
   "theme_color": "#667eea",
