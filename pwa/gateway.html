@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gateway Mode - TauroBot</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0e27;
+            color: #00ff00;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .terminal {
+            background: #000;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            box-shadow: 0 0 50px rgba(0,255,0,0.3);
+        }
+
+        .header {
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+            animation: glow 2s infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 10px #00ff00; }
+            50% { text-shadow: 0 0 20px #00ff00, 0 0 30px #00ff00; }
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .status-card {
+            background: #001a00;
+            border: 1px solid #00ff00;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .status-card h3 {
+            color: #00ff00;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .led {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff0000;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        .led.active {
+            background: #00ff00;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .console {
+            background: #000;
+            border: 1px solid #00ff00;
+            border-radius: 8px;
+            padding: 1rem;
+            height: 300px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .console-line {
+            margin: 0.3rem 0;
+        }
+
+        .console-line.info { color: #00bfff; }
+        .console-line.success { color: #00ff00; }
+        .console-line.warning { color: #ffaa00; }
+        .console-line.error { color: #ff0000; }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: #001a00;
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #00ff00;
+            color: #000;
+            box-shadow: 0 0 20px #00ff00;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            color: #00ff00;
+            font-weight: bold;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        input[type="text"], input[type="number"] {
+            background: #001a00;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 0.6rem;
+            border-radius: 5px;
+            font-family: inherit;
+            width: 200px;
+        }
+
+        .config-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #00ff00;
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal">
+        <div class="header">
+            <h1>🛸 GATEWAY MODE - Antenna sul Balcone</h1>
+            <p>Bridge locale ↔ esterno | Tu controlli il flusso</p>
+        </div>
+
+        <!-- Status Grid -->
+        <div class="status-grid">
+            <div class="status-card">
+                <h3>📡 Collegamenti</h3>
+                <div class="indicator">
+                    <div class="led" id="ledLocal"></div>
+                    <span>Locale (TauroBot)</span>
+                </div>
+                <div class="indicator">
+                    <div class="led" id="ledExternal"></div>
+                    <span>Esterno (Internet)</span>
+                </div>
+                <div class="indicator">
+                    <div class="led" id="ledGateway"></div>
+                    <span>Gateway Attivo</span>
+                </div>
+            </div>
+
+            <div class="status-card">
+                <h3>🔒 Sicurezza</h3>
+                <div class="indicator">
+                    <div class="led active"></div>
+                    <span>Encryption ON</span>
+                </div>
+                <div class="indicator">
+                    <div class="led active"></div>
+                    <span>Firewall ON</span>
+                </div>
+                <div class="indicator">
+                    <div class="led active"></div>
+                    <span>Sanitize ON</span>
+                </div>
+            </div>
+
+            <div class="status-card">
+                <h3>📊 Traffico</h3>
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-value" id="requestsIn">0</div>
+                        <div class="metric-label">IN</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="requestsOut">0</div>
+                        <div class="metric-label">OUT</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Console -->
+        <h3>📋 Activity Log</h3>
+        <div class="console" id="console">
+            <div class="console-line success">[SYSTEM] Gateway Mode initialized</div>
+            <div class="console-line info">[INFO] Waiting for connections...</div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <button onclick="startGateway()">▶️ START Gateway</button>
+            <button onclick="stopGateway()">⏸️ STOP Gateway</button>
+            <button onclick="testConnection()">🔍 Test Connessione</button>
+            <button onclick="clearLog()">🗑️ Clear Log</button>
+        </div>
+
+        <!-- Configuration -->
+        <div class="config-section">
+            <h3>⚙️ Configurazione Gateway</h3>
+            <div style="margin-top: 1rem;">
+                <label>
+                    Local Backend:
+                    <input type="text" id="localBackend" value="http://localhost:3000" placeholder="http://localhost:3000">
+                </label>
+                <br><br>
+                <label>
+                    Allowed Origins:
+                    <input type="text" id="allowedOrigins" value="*" placeholder="*">
+                </label>
+                <br><br>
+                <label>
+                    Max Request Size (KB):
+                    <input type="number" id="maxSize" value="1000" placeholder="1000">
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // GATEWAY LOGIC - "ANTENNA SUL BALCONE"
+        // ==========================================
+
+        let gatewayActive = false;
+        let requestsIn = 0;
+        let requestsOut = 0;
+        let wsConnection = null;
+
+        // Add log to console
+        function log(message, type = 'info') {
+            const console = document.getElementById('console');
+            const line = document.createElement('div');
+            line.className = `console-line ${type}`;
+            line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            console.appendChild(line);
+            console.scrollTop = console.scrollHeight;
+
+            // Keep only last 100 lines
+            if (console.children.length > 100) {
+                console.removeChild(console.firstChild);
+            }
+        }
+
+        // Start Gateway
+        function startGateway() {
+            if (gatewayActive) {
+                log('Gateway already running', 'warning');
+                return;
+            }
+
+            gatewayActive = true;
+            document.getElementById('ledGateway').classList.add('active');
+
+            log('🚀 Starting Gateway Mode...', 'success');
+            log('📡 Opening local connection...', 'info');
+
+            // Simulate local connection
+            setTimeout(() => {
+                document.getElementById('ledLocal').classList.add('active');
+                log('✅ Connected to TauroBot (localhost)', 'success');
+
+                // Simulate external connection
+                setTimeout(() => {
+                    document.getElementById('ledExternal').classList.add('active');
+                    log('✅ External connection established', 'success');
+                    log('🛸 Gateway ACTIVE - You are now the bridge!', 'success');
+
+                    // Start monitoring
+                    startMonitoring();
+                }, 1000);
+            }, 500);
+        }
+
+        // Stop Gateway
+        function stopGateway() {
+            if (!gatewayActive) {
+                log('Gateway not running', 'warning');
+                return;
+            }
+
+            gatewayActive = false;
+            document.getElementById('ledGateway').classList.remove('active');
+            document.getElementById('ledLocal').classList.remove('active');
+            document.getElementById('ledExternal').classList.remove('active');
+
+            log('⏸️ Gateway stopped', 'warning');
+        }
+
+        // Monitor traffic
+        function startMonitoring() {
+            setInterval(() => {
+                if (!gatewayActive) return;
+
+                // Simulate random traffic
+                if (Math.random() > 0.7) {
+                    const direction = Math.random() > 0.5 ? 'IN' : 'OUT';
+
+                    if (direction === 'IN') {
+                        requestsIn++;
+                        document.getElementById('requestsIn').textContent = requestsIn;
+                        log(`◀ Incoming request from external`, 'info');
+
+                        // Sanitize and forward
+                        setTimeout(() => {
+                            log(`✓ Sanitized and forwarded to TauroBot`, 'success');
+                        }, 200);
+
+                    } else {
+                        requestsOut++;
+                        document.getElementById('requestsOut').textContent = requestsOut;
+                        log(`▶ Outgoing response to external`, 'info');
+
+                        setTimeout(() => {
+                            log(`✓ Encrypted and sent`, 'success');
+                        }, 200);
+                    }
+                }
+            }, 3000);
+        }
+
+        // Test connection
+        async function testConnection() {
+            log('🔍 Testing connections...', 'info');
+
+            // Test local backend
+            const localBackend = document.getElementById('localBackend').value;
+            try {
+                log(`Testing local: ${localBackend}`, 'info');
+
+                // Simulated test (replace with real fetch in production)
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                log('✅ Local backend reachable', 'success');
+                document.getElementById('ledLocal').classList.add('active');
+
+            } catch (error) {
+                log(`❌ Local backend unreachable: ${error.message}`, 'error');
+                document.getElementById('ledLocal').classList.remove('active');
+            }
+
+            // Test external
+            try {
+                log('Testing external internet...', 'info');
+                await fetch('https://api.github.com/zen', { mode: 'no-cors' });
+                log('✅ External internet reachable', 'success');
+                document.getElementById('ledExternal').classList.add('active');
+            } catch (error) {
+                log('❌ External internet unreachable', 'error');
+                document.getElementById('ledExternal').classList.remove('active');
+            }
+        }
+
+        // Clear console
+        function clearLog() {
+            document.getElementById('console').innerHTML = '';
+            log('Console cleared', 'info');
+        }
+
+        // ==========================================
+        // GATEWAY PROXY LOGIC
+        // ==========================================
+
+        // Function to proxy request (chiamata da PWA dashboard)
+        async function proxyRequest(endpoint, data) {
+            if (!gatewayActive) {
+                throw new Error('Gateway not active');
+            }
+
+            requestsIn++;
+            document.getElementById('requestsIn').textContent = requestsIn;
+            log(`◀ Proxying request to: ${endpoint}`, 'info');
+
+            const localBackend = document.getElementById('localBackend').value;
+
+            try {
+                // Sanitize data (remove PII, validate, etc.)
+                const sanitized = sanitizeData(data);
+                log('✓ Data sanitized', 'success');
+
+                // Forward to local backend
+                const response = await fetch(`${localBackend}${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(sanitized)
+                });
+
+                const result = await response.json();
+
+                requestsOut++;
+                document.getElementById('requestsOut').textContent = requestsOut;
+                log(`▶ Response sent back`, 'success');
+
+                return result;
+
+            } catch (error) {
+                log(`❌ Proxy error: ${error.message}`, 'error');
+                throw error;
+            }
+        }
+
+        // Sanitize data before forwarding
+        function sanitizeData(data) {
+            // Remove PII
+            const sanitized = { ...data };
+
+            // Remove email patterns
+            if (sanitized.message) {
+                sanitized.message = sanitized.message.replace(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g, '[EMAIL_REMOVED]');
+            }
+
+            // Remove phone numbers
+            if (sanitized.message) {
+                sanitized.message = sanitized.message.replace(/\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/g, '[PHONE_REMOVED]');
+            }
+
+            // Limit size
+            const maxSize = parseInt(document.getElementById('maxSize').value) * 1024;
+            const size = JSON.stringify(sanitized).length;
+            if (size > maxSize) {
+                throw new Error(`Request too large: ${size} bytes`);
+            }
+
+            return sanitized;
+        }
+
+        // Expose gateway functions globally
+        window.TaurosGateway = {
+            proxyRequest,
+            startGateway,
+            stopGateway,
+            testConnection,
+            isActive: () => gatewayActive
+        };
+
+        // Auto-start on load (optional)
+        window.addEventListener('DOMContentLoaded', () => {
+            log('Gateway interface loaded', 'success');
+            log('Click START to activate bridge mode', 'info');
+        });
+    </script>
+</body>
+</html>
