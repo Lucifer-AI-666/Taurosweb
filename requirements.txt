@@ -6,3 +6,4 @@ pyttsx3==2.90
 SpeechRecognition==3.10.0
 aiofiles==23.2.1
 httpx==0.25.2
+cairosvg==2.7.1

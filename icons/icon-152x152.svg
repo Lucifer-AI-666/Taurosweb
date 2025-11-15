@@ -11,14 +11,14 @@
       <stop offset="100%" style="stop-color:#ffed4e;stop-opacity:1" />
     </linearGradient>
   </defs>
-  
+
   <!-- Background circle -->
   <circle cx="76" cy="76" r="76" fill="url(#bgGradient)"/>
-  
+
   <!-- Bull emoji / symbol -->
-  <text x="50%" y="50%" 
-        font-size="91.2" 
-        text-anchor="middle" 
+  <text x="50%" y="50%"
+        font-size="91.2"
+        text-anchor="middle"
         dominant-baseline="central"
         fill="url(#bullGradient)"
         font-family="Arial, sans-serif"
