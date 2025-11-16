@@ -375,6 +375,40 @@
     </div>
 
     <script>
+        // ==========================================
+        // AUTHENTICATION CHECK
+        // ==========================================
+        let session = null;
+
+        function checkAuth() {
+            const sessionData = sessionStorage.getItem('taurobot_session');
+
+            if (!sessionData) {
+                window.location.href = '/pwa/login.html';
+                return false;
+            }
+
+            session = JSON.parse(sessionData);
+
+            // Check if session expired (24 hours)
+            if (Date.now() - session.loginTime > 86400000) {
+                sessionStorage.removeItem('taurobot_session');
+                window.location.href = '/pwa/login.html';
+                return false;
+            }
+
+            return true;
+        }
+
+        // Check authentication before loading
+        if (!checkAuth()) {
+            throw new Error('Authentication required');
+        }
+
+        // ==========================================
+        // CAPACITOR & ADMIN PANEL
+        // ==========================================
+
         // Capacitor plugins (se disponibili)
         let Capacitor, Filesystem, Toast, Haptics;
 
