@@ -28,9 +28,13 @@ Taurosweb è il sito ufficiale di **TauroBot 3.0 Ultimate**, un bot AI avanzato 
 
 ## Installazione
 
-⚠️ **Per istruzioni dettagliate di installazione, vedi [INSTALL.md](INSTALL.md)**
+⚠️ **Scegli la guida per il tuo sistema operativo:**
 
-### Quick Start
+- 🐧 **Linux:** [INSTALL.md](INSTALL.md) - Guida completa
+- 🍎 **macOS:** [INSTALL_MACOS.md](INSTALL_MACOS.md) - Per i signorini con MacBook 💰
+- 🪟 **Windows:** [INSTALL.md](INSTALL.md) - Guida generale (adattabile)
+
+### Quick Start (Qualsiasi OS)
 
 1. Clona il repository:
    ```bash
@@ -52,7 +56,14 @@ Taurosweb è il sito ufficiale di **TauroBot 3.0 Ultimate**, un bot AI avanzato 
    ```
 5. Avvia il bot:
    ```bash
+   # Linux/Windows:
    python bot.py
+
+   # macOS (consigliato):
+   ./start_bot_macos.sh
+
+   # Linux (con script):
+   ./start_bot.sh
    ```
 
 Per maggiori dettagli, consulta la [guida di installazione completa](INSTALL.md).
