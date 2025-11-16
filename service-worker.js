@@ -3,13 +3,17 @@
  * Gestisce cache e funzionalità offline
  */
 
-const CACHE_NAME = 'taurobot-v2.0.0-pwa';
+const CACHE_NAME = 'taurobot-v3.0.0-garage';
 const urlsToCache = [
   '/',
   '/index.html',
   '/manifest.json',
   '/pwa/login.html',
   '/pwa/dashboard.html',
+  '/pwa/garage.html',
+  '/pwa/gateway.html',
+  '/android/admin.html',
+  '/android/terminal.html',
   '/icons/icon-72x72.svg',
   '/icons/icon-192x192.svg',
   '/icons/icon-512x512.svg',

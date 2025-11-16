@@ -1,0 +1,35 @@
+{
+  "name": "taurobot-android",
+  "version": "3.0.0",
+  "description": "TauroBot 3.0 Ultimate - Android App",
+  "author": "Lucifer-AI-666",
+  "license": "MIT",
+  "scripts": {
+    "build": "npm run build:pwa && npm run build:android",
+    "build:pwa": "echo 'PWA already built'",
+    "build:android": "npx cap sync android && cd android && ./gradlew assembleRelease",
+    "build:debug": "npx cap sync android && cd android && ./gradlew assembleDebug",
+    "open": "npx cap open android",
+    "sync": "npx cap sync",
+    "install": "npm install && npx cap add android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^5.5.0",
+    "@capacitor/app": "^5.0.6",
+    "@capacitor/core": "^5.5.0",
+    "@capacitor/filesystem": "^5.1.4",
+    "@capacitor/haptics": "^5.0.6",
+    "@capacitor/keyboard": "^5.0.6",
+    "@capacitor/local-notifications": "^5.0.6",
+    "@capacitor/network": "^5.0.6",
+    "@capacitor/preferences": "^5.0.6",
+    "@capacitor/push-notifications": "^5.1.0",
+    "@capacitor/share": "^5.0.6",
+    "@capacitor/splash-screen": "^5.0.6",
+    "@capacitor/status-bar": "^5.0.6",
+    "@capacitor/toast": "^5.0.6"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^5.5.0"
+  }
+}

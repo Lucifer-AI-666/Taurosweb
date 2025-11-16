@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚗 Il Garage - Project Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .add-project-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .add-project-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .project-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .project-card.critical {
+            border-left: 5px solid #f44336;
+        }
+
+        .project-card.warning {
+            border-left: 5px solid #ff9800;
+        }
+
+        .project-card.healthy {
+            border-left: 5px solid #4caf50;
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .project-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .status-badge.running {
+            background: #4caf50;
+            color: white;
+        }
+
+        .status-badge.stopped {
+            background: #f44336;
+            color: white;
+        }
+
+        .status-badge.idle {
+            background: #ff9800;
+            color: white;
+        }
+
+        .project-info {
+            margin: 15px 0;
+            color: #666;
+        }
+
+        .project-info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .problems-list {
+            margin: 15px 0;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 8px;
+            border-left: 4px solid #ff9800;
+        }
+
+        .problems-list.critical {
+            background: #f8d7da;
+            border-left-color: #f44336;
+        }
+
+        .problem-item {
+            padding: 5px 0;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .problem-item:hover {
+            color: #667eea;
+            text-decoration: underline;
+        }
+
+        .project-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .action-btn.secondary {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .modal-actions button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-cancel {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .health-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .health-bar {
+            flex: 1;
+            height: 10px;
+            background: #eee;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .health-fill {
+            height: 100%;
+            transition: width 0.3s;
+        }
+
+        .health-fill.good {
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+        }
+
+        .health-fill.medium {
+            background: linear-gradient(90deg, #ff9800, #ffc107);
+        }
+
+        .health-fill.poor {
+            background: linear-gradient(90deg, #f44336, #e91e63);
+        }
+
+        .quick-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚗 Il Garage</h1>
+            <p class="subtitle">Il tuo workshop per tutti i progetti - Organizza, monitora, risolvi</p>
+        </header>
+
+        <!-- Stats Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalProjects">0</div>
+                <div class="stat-label">Progetti Totali</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="runningProjects">0</div>
+                <div class="stat-label">In Esecuzione</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalProblems">0</div>
+                <div class="stat-label">Problemi Attivi</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="healthScore">100%</div>
+                <div class="stat-label">Salute Media</div>
+            </div>
+        </div>
+
+        <!-- Quick Filters -->
+        <div class="quick-filters">
+            <button class="filter-btn active" onclick="filterProjects('all')">Tutti</button>
+            <button class="filter-btn" onclick="filterProjects('running')">In Esecuzione</button>
+            <button class="filter-btn" onclick="filterProjects('problems')">Con Problemi</button>
+            <button class="filter-btn" onclick="filterProjects('healthy')">Healthy</button>
+        </div>
+
+        <!-- Add Project Button -->
+        <button class="add-project-btn" onclick="openAddProjectModal()">
+            ➕ Aggiungi Nuovo Progetto
+        </button>
+
+        <!-- Projects Grid -->
+        <div class="projects-grid" id="projectsGrid">
+            <!-- Projects will be dynamically added here -->
+        </div>
+    </div>
+
+    <!-- Add Project Modal -->
+    <div class="modal" id="addProjectModal">
+        <div class="modal-content">
+            <div class="modal-header">Aggiungi Nuovo Progetto</div>
+            <form onsubmit="addProject(event)">
+                <div class="form-group">
+                    <label>Nome Progetto</label>
+                    <input type="text" id="projectName" required placeholder="es. MioBot Telegram">
+                </div>
+                <div class="form-group">
+                    <label>Tipo</label>
+                    <select id="projectType">
+                        <option value="bot">Telegram Bot</option>
+                        <option value="web">Web App</option>
+                        <option value="api">REST API</option>
+                        <option value="ml">Machine Learning</option>
+                        <option value="other">Altro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Path Repository</label>
+                    <input type="text" id="projectPath" required placeholder="/home/user/MyProject">
+                </div>
+                <div class="form-group">
+                    <label>URL (opzionale)</label>
+                    <input type="url" id="projectUrl" placeholder="http://localhost:3000">
+                </div>
+                <div class="form-group">
+                    <label>Comando Start</label>
+                    <input type="text" id="projectStartCmd" placeholder="python bot.py">
+                </div>
+                <div class="form-group">
+                    <label>Descrizione</label>
+                    <textarea id="projectDesc" rows="3" placeholder="Breve descrizione del progetto..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeAddProjectModal()">Annulla</button>
+                    <button type="submit" class="btn-save">Salva Progetto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Problem Details Modal -->
+    <div class="modal" id="problemModal">
+        <div class="modal-content">
+            <div class="modal-header" id="problemTitle">Dettagli Problema</div>
+            <div id="problemDetails"></div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeProblemModal()">Chiudi</button>
+                <button class="btn-save" onclick="fixProblem()">Vai al Fix</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Default Projects (TauroBot is always included)
+        let projects = [
+            {
+                id: 'taurobot',
+                name: 'TauroBot 3.0 Ultimate',
+                type: 'bot',
+                status: 'running',
+                health: 95,
+                path: '/home/user/Taurosweb',
+                url: 'http://localhost:8000',
+                startCmd: 'python bot.py',
+                description: 'Bot Telegram con AI locale, PWA, e sicurezza 10/10',
+                lastCommit: 'Add bot startup script',
+                problems: [],
+                uptime: '2h 34m',
+                cpu: '12%',
+                ram: '245MB'
+            }
+        ];
+
+        let currentFilter = 'all';
+
+        // Load projects from localStorage
+        function loadProjects() {
+            const saved = localStorage.getItem('garage_projects');
+            if (saved) {
+                projects = JSON.parse(saved);
+            }
+            // Always ensure TauroBot is included
+            if (!projects.find(p => p.id === 'taurobot')) {
+                projects.unshift({
+                    id: 'taurobot',
+                    name: 'TauroBot 3.0 Ultimate',
+                    type: 'bot',
+                    status: 'running',
+                    health: 95,
+                    path: '/home/user/Taurosweb',
+                    url: 'http://localhost:8000',
+                    startCmd: 'python bot.py',
+                    description: 'Bot Telegram con AI locale, PWA, e sicurezza 10/10',
+                    lastCommit: 'Add bot startup script',
+                    problems: [],
+                    uptime: '2h 34m',
+                    cpu: '12%',
+                    ram: '245MB'
+                });
+            }
+            renderProjects();
+            updateStats();
+        }
+
+        // Save projects to localStorage
+        function saveProjects() {
+            localStorage.setItem('garage_projects', JSON.stringify(projects));
+        }
+
+        // Render all projects
+        function renderProjects() {
+            const grid = document.getElementById('projectsGrid');
+            grid.innerHTML = '';
+
+            const filtered = filterProjectsList();
+
+            filtered.forEach(project => {
+                const card = createProjectCard(project);
+                grid.appendChild(card);
+            });
+        }
+
+        // Filter projects
+        function filterProjectsList() {
+            switch(currentFilter) {
+                case 'running':
+                    return projects.filter(p => p.status === 'running');
+                case 'problems':
+                    return projects.filter(p => p.problems.length > 0);
+                case 'healthy':
+                    return projects.filter(p => p.health >= 80);
+                default:
+                    return projects;
+            }
+        }
+
+        // Create project card
+        function createProjectCard(project) {
+            const card = document.createElement('div');
+            card.className = `project-card ${getHealthClass(project.health)}`;
+
+            const statusClass = project.status === 'running' ? 'running' :
+                               project.status === 'stopped' ? 'stopped' : 'idle';
+
+            const problemsHtml = project.problems.length > 0 ? `
+                <div class="problems-list ${project.health < 60 ? 'critical' : ''}">
+                    <strong>⚠️ Problemi (${project.problems.length}):</strong>
+                    ${project.problems.map(p => `
+                        <div class="problem-item" onclick='showProblem(${JSON.stringify(p)})'>
+                            • ${p.title}
+                        </div>
+                    `).join('')}
+                </div>
+            ` : '<div style="color: #4caf50; padding: 10px;">✅ Nessun problema rilevato</div>';
+
+            card.innerHTML = `
+                <div class="project-header">
+                    <div class="project-name">${getProjectIcon(project.type)} ${project.name}</div>
+                    <div class="status-badge ${statusClass}">${project.status.toUpperCase()}</div>
+                </div>
+
+                <div class="health-indicator">
+                    <span>Salute:</span>
+                    <div class="health-bar">
+                        <div class="health-fill ${getHealthFillClass(project.health)}" style="width: ${project.health}%"></div>
+                    </div>
+                    <strong>${project.health}%</strong>
+                </div>
+
+                <div class="project-info">
+                    <div class="project-info-item">
+                        <span>📁 Path:</span>
+                        <span style="font-size: 0.9em;">${project.path}</span>
+                    </div>
+                    <div class="project-info-item">
+                        <span>⏱️ Uptime:</span>
+                        <span>${project.uptime || 'N/A'}</span>
+                    </div>
+                    <div class="project-info-item">
+                        <span>💻 CPU/RAM:</span>
+                        <span>${project.cpu || '0%'} / ${project.ram || '0MB'}</span>
+                    </div>
+                    <div class="project-info-item">
+                        <span>📝 Last commit:</span>
+                        <span style="font-size: 0.85em;">${project.lastCommit}</span>
+                    </div>
+                </div>
+
+                ${problemsHtml}
+
+                <div class="project-actions">
+                    <button class="action-btn primary" onclick="openTerminal('${project.id}')">
+                        💻 Terminal
+                    </button>
+                    <button class="action-btn primary" onclick="openAdmin('${project.id}')">
+                        ⚙️ Admin
+                    </button>
+                    <button class="action-btn secondary" onclick="toggleProject('${project.id}')">
+                        ${project.status === 'running' ? '⏸️ Stop' : '▶️ Start'}
+                    </button>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // Helper functions
+        function getProjectIcon(type) {
+            const icons = {
+                'bot': '🤖',
+                'web': '🌐',
+                'api': '🔌',
+                'ml': '🧠',
+                'other': '📦'
+            };
+            return icons[type] || '📦';
+        }
+
+        function getHealthClass(health) {
+            if (health >= 80) return 'healthy';
+            if (health >= 50) return 'warning';
+            return 'critical';
+        }
+
+        function getHealthFillClass(health) {
+            if (health >= 80) return 'good';
+            if (health >= 50) return 'medium';
+            return 'poor';
+        }
+
+        // Update stats
+        function updateStats() {
+            document.getElementById('totalProjects').textContent = projects.length;
+            document.getElementById('runningProjects').textContent =
+                projects.filter(p => p.status === 'running').length;
+
+            const totalProblems = projects.reduce((sum, p) => sum + p.problems.length, 0);
+            document.getElementById('totalProblems').textContent = totalProblems;
+
+            const avgHealth = Math.round(
+                projects.reduce((sum, p) => sum + p.health, 0) / projects.length
+            );
+            document.getElementById('healthScore').textContent = avgHealth + '%';
+        }
+
+        // Modal functions
+        function openAddProjectModal() {
+            document.getElementById('addProjectModal').classList.add('active');
+        }
+
+        function closeAddProjectModal() {
+            document.getElementById('addProjectModal').classList.remove('active');
+        }
+
+        function addProject(event) {
+            event.preventDefault();
+
+            const newProject = {
+                id: 'project_' + Date.now(),
+                name: document.getElementById('projectName').value,
+                type: document.getElementById('projectType').value,
+                path: document.getElementById('projectPath').value,
+                url: document.getElementById('projectUrl').value,
+                startCmd: document.getElementById('projectStartCmd').value,
+                description: document.getElementById('projectDesc').value,
+                status: 'stopped',
+                health: 100,
+                problems: [],
+                lastCommit: 'Initial setup',
+                uptime: '0m',
+                cpu: '0%',
+                ram: '0MB'
+            };
+
+            projects.push(newProject);
+            saveProjects();
+            renderProjects();
+            updateStats();
+            closeAddProjectModal();
+
+            // Reset form
+            event.target.reset();
+        }
+
+        // Filter projects
+        function filterProjects(filter) {
+            currentFilter = filter;
+
+            // Update button states
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            renderProjects();
+        }
+
+        // Toggle project status
+        function toggleProject(id) {
+            const project = projects.find(p => p.id === id);
+            if (project) {
+                project.status = project.status === 'running' ? 'stopped' : 'running';
+                saveProjects();
+                renderProjects();
+                updateStats();
+            }
+        }
+
+        // Show problem details
+        function showProblem(problem) {
+            document.getElementById('problemTitle').textContent = '⚠️ ' + problem.title;
+            document.getElementById('problemDetails').innerHTML = `
+                <div style="padding: 20px 0;">
+                    <p style="margin-bottom: 15px;"><strong>Descrizione:</strong></p>
+                    <p style="margin-bottom: 20px; color: #666;">${problem.description}</p>
+
+                    <p style="margin-bottom: 10px;"><strong>File:</strong></p>
+                    <code style="background: #f5f5f5; padding: 10px; display: block; border-radius: 5px; margin-bottom: 20px;">
+                        ${problem.file}:${problem.line}
+                    </code>
+
+                    <p style="margin-bottom: 10px;"><strong>Soluzione suggerita:</strong></p>
+                    <p style="color: #4caf50;">${problem.fix}</p>
+                </div>
+            `;
+            document.getElementById('problemModal').classList.add('active');
+        }
+
+        function closeProblemModal() {
+            document.getElementById('problemModal').classList.remove('active');
+        }
+
+        function fixProblem() {
+            alert('Aprendo editor per risolvere il problema...');
+            closeProblemModal();
+        }
+
+        // Open terminal for project
+        function openTerminal(projectId) {
+            const project = projects.find(p => p.id === projectId);
+            if (project) {
+                if (projectId === 'taurobot') {
+                    window.location.href = '/android/terminal.html';
+                } else {
+                    alert(`Aprendo terminal per ${project.name}...\nPath: ${project.path}`);
+                }
+            }
+        }
+
+        // Open admin panel for project
+        function openAdmin(projectId) {
+            const project = projects.find(p => p.id === projectId);
+            if (project) {
+                if (projectId === 'taurobot') {
+                    window.location.href = '/android/admin.html';
+                } else {
+                    alert(`Aprendo admin panel per ${project.name}...`);
+                }
+            }
+        }
+
+        // Auto-scan for problems (simulated)
+        function scanForProblems() {
+            projects.forEach(project => {
+                // Simulated problem detection
+                if (Math.random() > 0.7 && project.problems.length === 0) {
+                    const problems = [
+                        {
+                            title: 'Memoria elevata',
+                            description: 'Il processo sta usando più RAM del normale',
+                            file: project.path + '/main.py',
+                            line: 42,
+                            severity: 'warning',
+                            fix: 'Ottimizza i buffer o aggiungi garbage collection'
+                        },
+                        {
+                            title: 'Dipendenza obsoleta',
+                            description: 'requests==2.25.0 ha una vulnerabilità CVE-2023-xxxxx',
+                            file: project.path + '/requirements.txt',
+                            line: 5,
+                            severity: 'high',
+                            fix: 'Aggiorna a requests>=2.31.0'
+                        },
+                        {
+                            title: 'Test falliti',
+                            description: '3 test non passano in test_api.py',
+                            file: project.path + '/tests/test_api.py',
+                            line: 78,
+                            severity: 'critical',
+                            fix: 'Controlla gli assert sui codici HTTP 401'
+                        }
+                    ];
+
+                    if (project.id !== 'taurobot') {
+                        project.problems = [problems[Math.floor(Math.random() * problems.length)]];
+                        project.health = Math.max(50, project.health - 20);
+                    }
+                }
+            });
+
+            saveProjects();
+            renderProjects();
+            updateStats();
+        }
+
+        // Initialize
+        loadProjects();
+
+        // Auto-scan every 30 seconds
+        setInterval(scanForProblems, 30000);
+
+        // Simulate real-time updates
+        setInterval(() => {
+            projects.forEach(project => {
+                if (project.status === 'running') {
+                    // Randomize CPU/RAM
+                    project.cpu = Math.floor(Math.random() * 30) + 5 + '%';
+                    project.ram = Math.floor(Math.random() * 500) + 100 + 'MB';
+
+                    // Update uptime
+                    const uptimeMatch = project.uptime.match(/(\d+)h\s*(\d+)m/);
+                    if (uptimeMatch) {
+                        let hours = parseInt(uptimeMatch[1]);
+                        let mins = parseInt(uptimeMatch[2]) + 1;
+                        if (mins >= 60) {
+                            hours++;
+                            mins = 0;
+                        }
+                        project.uptime = `${hours}h ${mins}m`;
+                    }
+                }
+            });
+            saveProjects();
+            renderProjects();
+            updateStats();
+        }, 10000); // Every 10 seconds
+    </script>
+</body>
+</html>

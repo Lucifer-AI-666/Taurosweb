@@ -1,0 +1,37 @@
+{
+  "appId": "com.taurobot.ultimate",
+  "appName": "TauroBot Ultimate",
+  "webDir": ".",
+  "bundledWebRuntime": false,
+  "server": {
+    "url": "http://localhost:8000",
+    "cleartext": true
+  },
+  "android": {
+    "buildOptions": {
+      "keystorePath": "android/keystore.jks",
+      "keystoreAlias": "taurobot"
+    },
+    "splash": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#667eea",
+      "androidScaleType": "CENTER_CROP"
+    }
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#667eea",
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": true,
+      "spinnerColor": "#ffffff"
+    },
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_icon_config_sample",
+      "iconColor": "#667eea"
+    }
+  }
+}

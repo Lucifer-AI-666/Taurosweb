@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TauroBot Admin - Android</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+
+        .header {
+            background: rgba(255,255,255,0.95);
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 1.3rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .container {
+            padding: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            color: #333;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .status-item {
+            text-align: center;
+            padding: 1rem;
+            background: #f5f5f5;
+            border-radius: 10px;
+        }
+
+        .status-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .status-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.3rem;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 0.8rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-danger {
+            background: #ff4444;
+            color: white;
+        }
+
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .log-box {
+            background: #000;
+            color: #0f0;
+            padding: 1rem;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 1rem;
+        }
+
+        .log-line {
+            margin: 0.2rem 0;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 0.8rem;
+            font-family: inherit;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .section {
+            margin-top: 1.5rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .badge-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .badge-warning {
+            background: #ff9800;
+            color: white;
+        }
+
+        .badge-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.8rem;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin-bottom: 0.8rem;
+        }
+
+        .switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 26px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #667eea;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🤖 TauroBot Admin Panel</h1>
+    </div>
+
+    <div class="container">
+        <!-- Navigation to Garage -->
+        <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <h2 style="color: white;">🚗 Il Garage - Project Manager</h2>
+            <p style="margin-bottom: 1rem; opacity: 0.9;">Gestisci tutti i tuoi progetti da un unico posto</p>
+            <button class="btn" style="background: white; color: #667eea;" onclick="window.location.href='/pwa/garage.html'">
+                🚗 Apri Il Garage
+            </button>
+        </div>
+
+        <!-- Status Overview -->
+        <div class="card">
+            <h2>📊 Status Sistema</h2>
+            <div class="status-grid">
+                <div class="status-item">
+                    <div class="status-value" id="botStatus">●</div>
+                    <div class="status-label">Bot Status</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-value" id="uptime">00:00</div>
+                    <div class="status-label">Uptime</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-value" id="messages">0</div>
+                    <div class="status-label">Messaggi Oggi</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-value" id="users">0</div>
+                    <div class="status-label">Utenti Attivi</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <h2>⚡ Azioni Rapide</h2>
+            <button class="btn btn-primary" onclick="startBot()">
+                ▶️ Avvia Bot
+            </button>
+            <button class="btn btn-danger" onclick="stopBot()">
+                ⏹️ Ferma Bot
+            </button>
+            <button class="btn btn-secondary" onclick="restartBot()">
+                🔄 Restart Bot
+            </button>
+            <button class="btn btn-success" onclick="testMessage()">
+                💬 Invia Test Message
+            </button>
+        </div>
+
+        <!-- Configuration -->
+        <div class="card">
+            <h2>⚙️ Configurazione</h2>
+
+            <div class="toggle">
+                <span>Auto-restart on crash</span>
+                <label class="switch">
+                    <input type="checkbox" id="autoRestart" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle">
+                <span>Notifiche push</span>
+                <label class="switch">
+                    <input type="checkbox" id="pushNotif" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle">
+                <span>Voice responses</span>
+                <label class="switch">
+                    <input type="checkbox" id="voiceEnabled">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="section">
+                <label>Ollama Model:</label>
+                <select style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 2px solid #e0e0e0;" id="modelSelect">
+                    <option value="llama2">Llama 2 (7GB)</option>
+                    <option value="mistral">Mistral (4GB)</option>
+                    <option value="phi">Phi (2.7GB)</option>
+                    <option value="codellama">CodeLlama (7GB)</option>
+                </select>
+            </div>
+
+            <button class="btn btn-primary" onclick="saveConfig()">
+                💾 Salva Configurazione
+            </button>
+        </div>
+
+        <!-- Logs -->
+        <div class="card">
+            <h2>📋 Log Sistema</h2>
+            <div class="log-box" id="logBox">
+                <div class="log-line">[SYSTEM] Admin panel caricato</div>
+                <div class="log-line">[INFO] Connessione al bot in corso...</div>
+            </div>
+            <button class="btn btn-secondary" onclick="clearLogs()">
+                🗑️ Pulisci Log
+            </button>
+        </div>
+
+        <!-- Database Management -->
+        <div class="card">
+            <h2>💾 Database</h2>
+            <button class="btn btn-primary" onclick="exportData()">
+                📤 Esporta Dati
+            </button>
+            <button class="btn btn-secondary" onclick="importData()">
+                📥 Importa Dati
+            </button>
+            <button class="btn btn-danger" onclick="clearDatabase()">
+                🗑️ Cancella Database
+            </button>
+        </div>
+
+        <!-- Updates -->
+        <div class="card">
+            <h2>🔄 Aggiornamenti</h2>
+            <p style="color: #666; margin-bottom: 1rem;">
+                Versione corrente: <strong>3.0.0</strong>
+                <span class="badge badge-success">Aggiornato</span>
+            </p>
+            <button class="btn btn-primary" onclick="checkUpdates()">
+                🔍 Controlla Aggiornamenti
+            </button>
+            <button class="btn btn-secondary" onclick="pullRepo()">
+                📥 Pull da GitHub
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Capacitor plugins (se disponibili)
+        let Capacitor, Filesystem, Toast, Haptics;
+
+        // Import Capacitor se disponibile
+        if (window.Capacitor) {
+            Capacitor = window.Capacitor;
+            if (Capacitor.Plugins) {
+                Filesystem = Capacitor.Plugins.Filesystem;
+                Toast = Capacitor.Plugins.Toast;
+                Haptics = Capacitor.Plugins.Haptics;
+            }
+        }
+
+        // Log function
+        function addLog(message, type = 'INFO') {
+            const logBox = document.getElementById('logBox');
+            const time = new Date().toLocaleTimeString();
+            const line = document.createElement('div');
+            line.className = 'log-line';
+            line.textContent = `[${time}] [${type}] ${message}`;
+            logBox.appendChild(line);
+            logBox.scrollTop = logBox.scrollHeight;
+
+            // Haptic feedback
+            if (Haptics) {
+                Haptics.impact({ style: 'light' });
+            }
+        }
+
+        // Toast notification
+        async function showToast(message) {
+            if (Toast) {
+                await Toast.show({ text: message, duration: 'short' });
+            } else {
+                addLog(message);
+            }
+        }
+
+        // Bot control functions
+        async function startBot() {
+            addLog('Avvio bot...', 'SYSTEM');
+            // Qui andrà la chiamata API al backend locale
+            await showToast('Bot avviato');
+            document.getElementById('botStatus').textContent = '🟢';
+            document.getElementById('botStatus').style.color = '#4caf50';
+        }
+
+        async function stopBot() {
+            if (!confirm('Sei sicuro di voler fermare il bot?')) return;
+            addLog('Arresto bot...', 'SYSTEM');
+            await showToast('Bot fermato');
+            document.getElementById('botStatus').textContent = '🔴';
+            document.getElementById('botStatus').style.color = '#f44336';
+        }
+
+        async function restartBot() {
+            await stopBot();
+            setTimeout(startBot, 1000);
+        }
+
+        async function testMessage() {
+            const message = prompt('Inserisci messaggio di test:');
+            if (!message) return;
+            addLog(`Test: ${message}`, 'TEST');
+            await showToast('Messaggio inviato');
+        }
+
+        // Configuration
+        async function saveConfig() {
+            const config = {
+                autoRestart: document.getElementById('autoRestart').checked,
+                pushNotif: document.getElementById('pushNotif').checked,
+                voiceEnabled: document.getElementById('voiceEnabled').checked,
+                model: document.getElementById('modelSelect').value
+            };
+
+            // Save to local storage
+            localStorage.setItem('taurobot_config', JSON.stringify(config));
+            addLog('Configurazione salvata', 'SUCCESS');
+            await showToast('✅ Configurazione salvata');
+
+            if (Haptics) {
+                await Haptics.notification({ type: 'success' });
+            }
+        }
+
+        // Database operations
+        async function exportData() {
+            addLog('Esportazione dati...', 'INFO');
+
+            const data = {
+                config: JSON.parse(localStorage.getItem('taurobot_config') || '{}'),
+                users: JSON.parse(localStorage.getItem('taurobot_users') || '[]'),
+                logs: document.getElementById('logBox').innerText,
+                exportDate: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `taurobot-backup-${Date.now()}.json`;
+            a.click();
+
+            await showToast('📥 Dati esportati');
+            addLog('Esportazione completata', 'SUCCESS');
+        }
+
+        async function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'application/json';
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                const text = await file.text();
+                const data = JSON.parse(text);
+
+                localStorage.setItem('taurobot_config', JSON.stringify(data.config || {}));
+                localStorage.setItem('taurobot_users', JSON.stringify(data.users || []));
+
+                await showToast('✅ Dati importati');
+                addLog('Importazione completata', 'SUCCESS');
+                location.reload();
+            };
+            input.click();
+        }
+
+        async function clearDatabase() {
+            if (!confirm('⚠️ ATTENZIONE: Questo cancellerà TUTTI i dati!\n\nSei sicuro?')) return;
+
+            localStorage.clear();
+            addLog('Database cancellato', 'WARNING');
+            await showToast('🗑️ Database cancellato');
+            location.reload();
+        }
+
+        // Updates
+        async function checkUpdates() {
+            addLog('Controllo aggiornamenti...', 'INFO');
+            await showToast('Controllo in corso...');
+
+            // Simulate check
+            setTimeout(async () => {
+                addLog('Sistema aggiornato', 'SUCCESS');
+                await showToast('✅ Nessun aggiornamento disponibile');
+            }, 2000);
+        }
+
+        async function pullRepo() {
+            addLog('Pull da GitHub...', 'INFO');
+            await showToast('📥 Download in corso...');
+            // This would need backend API
+        }
+
+        function clearLogs() {
+            document.getElementById('logBox').innerHTML = '';
+            addLog('Log puliti', 'SYSTEM');
+        }
+
+        // Simulate uptime
+        let startTime = Date.now();
+        setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            const minutes = Math.floor(elapsed / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+            document.getElementById('uptime').textContent =
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }, 1000);
+
+        // Simulate messages/users
+        setInterval(() => {
+            const messages = Math.floor(Math.random() * 100);
+            const users = Math.floor(Math.random() * 20);
+            document.getElementById('messages').textContent = messages;
+            document.getElementById('users').textContent = users;
+        }, 5000);
+
+        // Load config on startup
+        window.addEventListener('DOMContentLoaded', () => {
+            const config = JSON.parse(localStorage.getItem('taurobot_config') || '{}');
+            if (config.autoRestart !== undefined) {
+                document.getElementById('autoRestart').checked = config.autoRestart;
+            }
+            if (config.pushNotif !== undefined) {
+                document.getElementById('pushNotif').checked = config.pushNotif;
+            }
+            if (config.voiceEnabled !== undefined) {
+                document.getElementById('voiceEnabled').checked = config.voiceEnabled;
+            }
+            if (config.model) {
+                document.getElementById('modelSelect').value = config.model;
+            }
+
+            addLog('Admin panel pronto', 'SUCCESS');
+            showToast('🤖 TauroBot Admin');
+        });
+    </script>
+</body>
+</html>
