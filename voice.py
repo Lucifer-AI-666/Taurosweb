@@ -8,6 +8,9 @@ import os
 from typing import Optional
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
+from utils import FileManager, ErrorHandler, get_logger
+
+logger = get_logger(__name__)
 
 
 class VoiceSystem:
@@ -40,9 +43,9 @@ class VoiceSystem:
             self._init_engine()
             self._engine.save_to_file(text, output_file)
             self._engine.runAndWait()
-            return os.path.exists(output_file)
+            return FileManager.file_exists(output_file)
         except Exception as e:
-            print(f"Errore nella sintesi vocale: {e}")
+            logger.error(f"Errore nella sintesi vocale: {e}")
             return False
             
     async def text_to_speech(self, text: str, output_file: str) -> Optional[str]:
@@ -70,7 +73,7 @@ class VoiceSystem:
                 return output_file
             return None
         except Exception as e:
-            print(f"Errore in text_to_speech: {e}")
+            logger.error(f"Errore in text_to_speech: {e}")
             return None
             
     def set_rate(self, rate: int):

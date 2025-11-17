@@ -7,6 +7,7 @@ import asyncio
 import os
 from memory import MemorySystem
 from voice import VoiceSystem
+from utils import FileManager
 
 
 async def test_memory_system():
@@ -46,10 +47,8 @@ async def test_memory_system():
     assert len(memory.get_conversation(123)) == 0, "Errore: memoria non cancellata"
     
     # Cleanup
-    if os.path.exists(test_file):
-        os.remove(test_file)
-    if os.path.exists(f"{test_file}.bak"):
-        os.remove(f"{test_file}.bak")
+    FileManager.safe_remove(test_file)
+    FileManager.safe_remove(f"{test_file}.bak")
     
     print("✅ Memory System: OK")
 
@@ -74,8 +73,7 @@ async def test_voice_system():
         result = await voice.text_to_speech("Test vocale", test_audio)
         if result:
             print("  ℹ️ Sintesi vocale funzionante")
-            if os.path.exists(test_audio):
-                os.remove(test_audio)
+            FileManager.safe_remove(test_audio)
         else:
             print("  ⚠️ Sintesi vocale non disponibile (dipendenze mancanti)")
     except Exception as e:
@@ -104,7 +102,7 @@ async def test_config_files():
     
     missing = []
     for file in required_files:
-        if not os.path.exists(file):
+        if not FileManager.file_exists(file):
             missing.append(file)
     
     if missing:
