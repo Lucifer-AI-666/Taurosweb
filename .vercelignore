@@ -1,0 +1,44 @@
+# Python bot files (non servono per PWA)
+bot.py
+memory.py
+voice.py
+test_bot.py
+*.pyc
+__pycache__/
+
+# Environment and secrets
+.env
+.env.*
+
+# Scripts
+*.sh
+deploy_*.sh
+start_bot*.sh
+
+# Logs
+logs/
+*.log
+
+# Memory data
+memory/
+
+# Git
+.git/
+.gitignore
+
+# Documentation (opzionale - puoi includerli se vuoi)
+*.md
+!README.md
+
+# Build artifacts
+node_modules/
+.vercel/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.swp
+.taurobot_*
