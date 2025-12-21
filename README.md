@@ -32,6 +32,29 @@ Taurosweb è il sito ufficiale di **TauroBot 3.0 Ultimate**, un bot AI avanzato 
 
 ### Quick Start
 
+#### Metodo 1: Automatico (Consigliato)
+1. Clona il repository:
+   ```bash
+   git clone https://github.com/Lucifer-AI-666/Taurosweb.git
+   cd Taurosweb
+   ```
+2. Esegui lo script di setup:
+   ```bash
+   ./setup.sh
+   ```
+3. Configura il tuo token in `.env`
+4. Avvia Ollama:
+   ```bash
+   ollama serve
+   ```
+5. Avvia il bot:
+   ```bash
+   ./run.sh
+   # oppure
+   python3 run.py
+   ```
+
+#### Metodo 2: Manuale
 1. Clona il repository:
    ```bash
    git clone https://github.com/Lucifer-AI-666/Taurosweb.git
@@ -142,6 +165,9 @@ Taurosweb/
 ├── memory.py                   # Sistema memoria persistente
 ├── voice.py                    # Sistema sintesi vocale (TTS)
 ├── test_bot.py                 # Suite di test
+├── run.py                      # Script Python per avviare il bot
+├── run.sh                      # Script Bash per avviare il bot
+├── setup.sh                    # Script di setup automatico
 ├── config.yml                  # Configurazione bot
 ├── requirements.txt            # Dipendenze Python
 ├── .env.example                # Template variabili d'ambiente
