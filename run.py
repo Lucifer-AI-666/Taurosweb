@@ -7,6 +7,8 @@ Simple wrapper to run the bot with proper error handling and setup checks
 import os
 import sys
 import subprocess
+import shutil
+import re
 from pathlib import Path
 
 
@@ -17,7 +19,6 @@ def check_env_file():
         print("Creating .env from .env.example...")
         
         if os.path.exists('.env.example'):
-            import shutil
             shutil.copy('.env.example', '.env')
             print("✅ .env file created.")
             print("")
@@ -35,7 +36,6 @@ def check_env_file():
     with open('.env', 'r') as f:
         content = f.read()
         # Look for TELEGRAM_BOT_TOKEN line with a value that's not the placeholder
-        import re
         token_match = re.search(r'^\s*TELEGRAM_BOT_TOKEN\s*=\s*(.+?)\s*$', content, re.MULTILINE)
         if not token_match or token_match.group(1) in ('', 'your_telegram_bot_token_here'):
             print("⚠️  Warning: TELEGRAM_BOT_TOKEN not configured in .env!")

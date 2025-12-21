@@ -15,8 +15,8 @@ help:
 
 install:
 	@echo "📦 Installing dependencies..."
-	@python3 -m pip install --upgrade pip > /dev/null 2>&1 || pip install --upgrade pip
-	@python3 -m pip install -r requirements.txt || pip install -r requirements.txt
+	@python3 -m pip install --upgrade pip > /dev/null 2>&1 || python -m pip install --upgrade pip > /dev/null 2>&1
+	@python3 -m pip install -r requirements.txt || python -m pip install -r requirements.txt
 	@echo "✅ Dependencies installed!"
 
 run:
