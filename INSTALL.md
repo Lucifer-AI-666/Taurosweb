@@ -71,6 +71,37 @@ Modifica `config.yml` per personalizzare:
 
 ## Avvio del Bot
 
+### Metodo Facile (Consigliato) 🚀
+
+**Linux/Mac:**
+```bash
+./run.sh
+```
+
+**Windows:**
+```cmd
+run.bat
+```
+
+Lo script automaticamente:
+- ✅ Crea il virtual environment se non esiste
+- ✅ Installa/aggiorna le dipendenze
+- ✅ Crea il file .env se mancante
+- ✅ Verifica che Ollama sia raggiungibile
+- ✅ Avvia il bot
+
+### Metodo con Makefile
+
+```bash
+make setup      # Prima volta: crea venv e .env
+make install    # Installa dipendenze
+make run        # Avvia il bot
+make test       # Esegui test
+make clean      # Pulisci file temporanei
+```
+
+### Metodo Manuale
+
 ```bash
 python bot.py
 ```

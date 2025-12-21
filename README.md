@@ -32,6 +32,40 @@ Taurosweb è il sito ufficiale di **TauroBot 3.0 Ultimate**, un bot AI avanzato 
 
 ### Quick Start
 
+#### Metodo Facile (Consigliato) 🚀
+
+**Linux/Mac:**
+```bash
+git clone https://github.com/Lucifer-AI-666/Taurosweb.git
+cd Taurosweb
+./run.sh
+```
+
+**Windows:**
+```cmd
+git clone https://github.com/Lucifer-AI-666/Taurosweb.git
+cd Taurosweb
+run.bat
+```
+
+Lo script automaticamente:
+- Crea il virtual environment
+- Installa le dipendenze
+- Copia il file .env di esempio
+- Verifica Ollama
+- Avvia il bot
+
+#### Metodo con Makefile
+
+```bash
+git clone https://github.com/Lucifer-AI-666/Taurosweb.git
+cd Taurosweb
+make setup      # Prima volta
+make run        # Avvia il bot
+```
+
+#### Metodo Manuale
+
 1. Clona il repository:
    ```bash
    git clone https://github.com/Lucifer-AI-666/Taurosweb.git
@@ -84,6 +118,19 @@ Vedi [INSTALL.md](INSTALL.md) per dettagli completi.
 ## Uso
 
 ### Avvio del Bot
+
+**Metodo Facile (Consigliato):**
+```bash
+./run.sh        # Linux/Mac
+run.bat         # Windows
+```
+
+**Con Makefile:**
+```bash
+make run
+```
+
+**Manuale:**
 ```bash
 python bot.py
 ```
@@ -103,6 +150,13 @@ Invia semplicemente un messaggio al bot su Telegram e ti risponderà utilizzando
 
 ### Test
 Esegui i test per verificare l'installazione:
+
+**Con Makefile:**
+```bash
+make test
+```
+
+**Manuale:**
 ```bash
 python test_bot.py
 ```
@@ -142,6 +196,9 @@ Taurosweb/
 ├── memory.py                   # Sistema memoria persistente
 ├── voice.py                    # Sistema sintesi vocale (TTS)
 ├── test_bot.py                 # Suite di test
+├── run.sh                      # Script avvio facile (Linux/Mac)
+├── run.bat                     # Script avvio facile (Windows)
+├── Makefile                    # Comandi make per gestione progetto
 ├── config.yml                  # Configurazione bot
 ├── requirements.txt            # Dipendenze Python
 ├── .env.example                # Template variabili d'ambiente
