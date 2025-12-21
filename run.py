@@ -34,7 +34,10 @@ def check_env_file():
     # Check if token is configured
     with open('.env', 'r') as f:
         content = f.read()
-        if 'your_telegram_bot_token_here' in content or 'TELEGRAM_BOT_TOKEN=' not in content:
+        # Look for TELEGRAM_BOT_TOKEN line with a value that's not the placeholder
+        import re
+        token_match = re.search(r'^\s*TELEGRAM_BOT_TOKEN\s*=\s*(.+?)\s*$', content, re.MULTILINE)
+        if not token_match or token_match.group(1) in ('', 'your_telegram_bot_token_here'):
             print("⚠️  Warning: TELEGRAM_BOT_TOKEN not configured in .env!")
             print("Please edit .env and set your bot token from @BotFather")
             print("")
@@ -98,7 +101,14 @@ def main():
     print("")
     
     try:
-        from bot import main as bot_main
+        # Import and run the bot
+        try:
+            from bot import main as bot_main
+        except ImportError as e:
+            print(f"❌ Error: Could not import bot module: {e}")
+            print("Make sure bot.py exists in the current directory")
+            sys.exit(1)
+        
         bot_main()
     except KeyboardInterrupt:
         print("\n\n👋 Bot stopped by user")

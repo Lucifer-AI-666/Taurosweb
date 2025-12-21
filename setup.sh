@@ -19,7 +19,7 @@ echo ""
 
 # Install dependencies
 echo "2️⃣  Installing Python dependencies..."
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 echo "✅ Dependencies installed"
 echo ""
 
@@ -50,11 +50,20 @@ echo "5️⃣  Checking Ollama..."
 if command -v ollama &> /dev/null; then
     echo "✅ Ollama is installed"
     
+    # Get Ollama host from .env or use default
+    OLLAMA_HOST="http://localhost:11434"
+    if [ -f .env ]; then
+        CONFIGURED_HOST=$(grep "^OLLAMA_HOST=" .env | cut -d'=' -f2)
+        if [ ! -z "$CONFIGURED_HOST" ]; then
+            OLLAMA_HOST="$CONFIGURED_HOST"
+        fi
+    fi
+    
     # Check if Ollama is running
-    if curl -s http://localhost:11434/api/tags > /dev/null 2>&1; then
-        echo "✅ Ollama is running"
+    if curl -s ${OLLAMA_HOST}/api/tags > /dev/null 2>&1; then
+        echo "✅ Ollama is running at ${OLLAMA_HOST}"
     else
-        echo "⚠️  Ollama is not running. Start it with: ollama serve"
+        echo "⚠️  Ollama is not running at ${OLLAMA_HOST}. Start it with: ollama serve"
     fi
 else
     echo "⚠️  Ollama not found. Please install from: https://ollama.ai"

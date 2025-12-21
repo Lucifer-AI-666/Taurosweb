@@ -29,7 +29,7 @@ fi
 # Check if dependencies are installed
 if ! python3 -c "import telegram" 2>/dev/null; then
     echo "📦 Installing dependencies..."
-    pip install -r requirements.txt
+    pip3 install -r requirements.txt
     echo "✅ Dependencies installed!"
     echo ""
 fi
