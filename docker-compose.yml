@@ -1,0 +1,62 @@
+# TauroBot 3.0 Ultimate - Docker Compose
+# Esegui con: docker-compose up -d
+
+version: '3.8'
+
+services:
+  # TauroBot - Bot Telegram
+  taurobot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: taurobot
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+      - MEMORY_FILE=/app/memory/conversations.json
+      - TZ=Europe/Rome
+    volumes:
+      - ./memory:/app/memory
+      - ./logs:/app/logs
+      - ./config.yml:/app/config.yml:ro
+    depends_on:
+      ollama:
+        condition: service_healthy
+    networks:
+      - taurobot-network
+
+  # Ollama - Server AI locale
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      - taurobot-network
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+        reservations:
+          memory: 4G
+
+networks:
+  taurobot-network:
+    driver: bridge
+
+volumes:
+  ollama-data:
+    driver: local

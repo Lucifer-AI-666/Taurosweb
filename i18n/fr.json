@@ -1,0 +1,83 @@
+{
+  "bot_name": "TauroBot 3.0 Ultimate",
+  
+  "welcome": {
+    "greeting": "🐂 Bonjour {name}! Je suis TauroBot 3.0 Ultimate!",
+    "description": "Je suis un bot IA avancé avec:",
+    "features": {
+      "ai": "🧠 Intelligence artificielle Ollama",
+      "memory": "💾 Mémoire persistante des conversations",
+      "voice": "🔊 Synthèse vocale",
+      "hacker": "🥷 Âme hacker"
+    },
+    "commands_title": "Commandes disponibles:",
+    "send_message": "Envoyez-moi un message et je vous répondrai!"
+  },
+  
+  "commands": {
+    "start": "/start - Démarrer le bot",
+    "help": "/help - Afficher l'aide",
+    "clear": "/clear - Effacer la mémoire de conversation",
+    "stats": "/stats - Statistiques de mémoire",
+    "voice": "/voice - Activer/désactiver la synthèse vocale",
+    "lang": "/lang - Changer de langue"
+  },
+  
+  "help": {
+    "title": "🐂 *TauroBot 3.0 Ultimate - Aide*",
+    "basic_commands": "*Commandes de base:*",
+    "how_it_works": "*Comment je fonctionne:*",
+    "feature_ai": "Envoyez-moi un message et je répondrai avec l'IA",
+    "feature_memory": "Je me souviens de nos conversations passées",
+    "feature_voice": "Je peux répondre avec des messages vocaux",
+    "feature_hacker": "Je suis toujours en mode hacker 🥷",
+    "tips": "*Conseils:*",
+    "tip_complex": "Posez-moi des questions complexes",
+    "tip_coding": "Demandez de l'aide sur le code, la technologie, etc.",
+    "tip_clear": "Utilisez /clear pour recommencer à zéro"
+  },
+  
+  "memory": {
+    "cleared": "✅ Mémoire de conversation effacée!",
+    "nothing_to_clear": "ℹ️ Aucune mémoire à effacer.",
+    "stats_title": "📊 *Statistiques de Mémoire*",
+    "your_stats": "*Vos statistiques:*",
+    "saved_messages": "Messages sauvegardés: {count}",
+    "global_stats": "*Statistiques globales:*",
+    "total_users": "Utilisateurs totaux: {count}",
+    "total_messages": "Messages totaux: {count}",
+    "avg_messages": "Moy msgs/utilisateur: {avg}"
+  },
+  
+  "voice": {
+    "enabled": "🔊 Synthèse vocale activée!",
+    "disabled": "🔇 Synthèse vocale désactivée!"
+  },
+  
+  "language": {
+    "title": "🌍 *Choisissez votre langue:*",
+    "changed": "✅ Langue changée en: {lang}",
+    "not_supported": "❌ Langue non supportée. Disponibles: {langs}",
+    "current": "Langue actuelle: {lang}"
+  },
+  
+  "errors": {
+    "ai_error": "❌ Erreur de contact avec l'IA: {error}",
+    "generic_error": "❌ Une erreur s'est produite. Réessayez plus tard.",
+    "rate_limited": "⚠️ Trop de messages! Attendez {seconds} secondes.",
+    "not_authorized": "🚫 Vous n'êtes pas autorisé à utiliser cette commande."
+  },
+  
+  "rate_limit": {
+    "warning": "⚠️ Vous envoyez trop de messages!",
+    "wait": "Attendez {seconds} secondes avant d'envoyer un autre message.",
+    "limit_info": "Limite: {limit} messages toutes les {window} secondes."
+  },
+  
+  "system": {
+    "thinking": "🤔 Je réfléchis...",
+    "generating_voice": "🎙️ Génération de la réponse vocale...",
+    "bot_started": "🐂 TauroBot 3.0 démarré!",
+    "bot_stopped": "🐂 TauroBot 3.0 arrêté."
+  }
+}

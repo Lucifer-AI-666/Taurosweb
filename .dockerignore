@@ -1,0 +1,60 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info
+.eggs
+dist
+build
+*.egg
+
+# Virtual environments
+venv
+.venv
+env
+.env.local
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+*.md
+!README.md
+docs
+
+# Test files
+test_*.py
+tests/
+.pytest_cache
+.coverage
+htmlcov
+
+# Logs e temp
+*.log
+logs/
+temp_*
+
+# Icons e PWA (non necessari per il bot)
+icons/
+*.html
+*.js
+*.json
+!config.yml
+!package.json
+
+# Altri
+*.bak
+*.tmp

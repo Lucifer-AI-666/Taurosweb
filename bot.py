@@ -7,7 +7,7 @@ import os
 import logging
 import asyncio
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Dict, List, Any
 import yaml
 from dotenv import load_dotenv
 
@@ -23,6 +23,8 @@ import httpx
 
 from memory import MemorySystem
 from voice import VoiceSystem
+from rate_limiter import RateLimiter
+from i18n import i18n, get_text, get_available_languages, is_supported_language
 
 
 # Configurazione logging
@@ -61,13 +63,25 @@ class TauroBot:
         )
         
         # Client HTTP per Ollama
-        self.http_client = httpx.AsyncClient(timeout=60.0)
+        self.http_client: httpx.AsyncClient = httpx.AsyncClient(timeout=60.0)
         
         # Admin users
         admin_ids = os.getenv('ADMIN_USER_IDS', '')
-        self.admin_users = [int(x.strip()) for x in admin_ids.split(',') if x.strip().isdigit()]
+        self.admin_users: List[int] = [int(x.strip()) for x in admin_ids.split(',') if x.strip().isdigit()]
         
-    def _load_config(self) -> dict:
+        # Rate limiter
+        limits = self.config.get('limits', {})
+        self.rate_limiter = RateLimiter(
+            max_requests=limits.get('rate_limit_messages', 30),
+            window_seconds=limits.get('rate_limit_window', 60),
+            block_duration=60
+        )
+        
+        # Aggiungi admin alla whitelist del rate limiter
+        for admin_id in self.admin_users:
+            self.rate_limiter.add_to_whitelist(admin_id)
+        
+    def _load_config(self) -> Dict[str, Any]:
         """Carica configurazione da config.yml"""
         try:
             if os.path.exists('config.yml'):
@@ -145,19 +159,52 @@ class TauroBot:
         )
         await update.message.reply_text(stats_text, parse_mode='Markdown')
         
-    async def voice_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+    async def voice_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Handler per il comando /voice"""
         user_id = update.effective_user.id
+        lang = i18n.get_user_language(user_id)
+        
         # Toggle voice preference (stored in context)
         if 'voice_enabled' not in context.user_data:
             context.user_data['voice_enabled'] = True
         else:
             context.user_data['voice_enabled'] = not context.user_data['voice_enabled']
             
-        status = "attivata" if context.user_data['voice_enabled'] else "disattivata"
-        await update.message.reply_text(f"🔊 Sintesi vocale {status}!")
+        if context.user_data['voice_enabled']:
+            await update.message.reply_text(get_text('voice.enabled', lang))
+        else:
+            await update.message.reply_text(get_text('voice.disabled', lang))
+            
+    async def lang_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        """Handler per il comando /lang - cambia lingua"""
+        user_id = update.effective_user.id
+        current_lang = i18n.get_user_language(user_id)
         
-    async def query_ollama(self, prompt: str, context_messages: list = None) -> Optional[str]:
+        # Se è stato specificato un codice lingua
+        if context.args and len(context.args) > 0:
+            new_lang = context.args[0].lower()
+            
+            if is_supported_language(new_lang):
+                i18n.set_user_language(user_id, new_lang)
+                lang_name = get_available_languages().get(new_lang, new_lang)
+                await update.message.reply_text(
+                    get_text('language.changed', new_lang, lang=lang_name)
+                )
+            else:
+                langs = ', '.join(get_available_languages().keys())
+                await update.message.reply_text(
+                    get_text('language.not_supported', current_lang, langs=langs)
+                )
+        else:
+            # Mostra lingue disponibili
+            text = get_text('language.title', current_lang) + "\n\n"
+            for code, name in get_available_languages().items():
+                marker = " ✓" if code == current_lang else ""
+                text += f"{name}{marker}\n"
+            text += f"\nUsa: /lang <codice> (es. /lang en)"
+            await update.message.reply_text(text, parse_mode='Markdown')
+        
+    async def query_ollama(self, prompt: str, context_messages: Optional[List[Dict[str, Any]]] = None) -> Optional[str]:
         """Interroga Ollama per ottenere una risposta AI"""
         try:
             # Prepara i messaggi con contesto
@@ -203,10 +250,22 @@ class TauroBot:
             logger.error(f"Errore query Ollama: {e}")
             return f"❌ Errore nel contattare l'AI: {str(e)}"
             
-    async def handle_message(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+    async def handle_message(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Handler per i messaggi degli utenti"""
         user_id = update.effective_user.id
         user_message = update.message.text
+        lang = i18n.get_user_language(user_id)
+        
+        # Check rate limit
+        allowed, wait_seconds = self.rate_limiter.check(user_id)
+        if not allowed:
+            await update.message.reply_text(
+                get_text('errors.rate_limited', lang, seconds=wait_seconds)
+            )
+            return
+            
+        # Registra richiesta per rate limiting
+        self.rate_limiter.record(user_id)
         
         # Salva messaggio utente in memoria
         self.memory.add_message(user_id, "user", user_message)
@@ -273,6 +332,7 @@ class TauroBot:
         application.add_handler(CommandHandler("clear", self.clear_command))
         application.add_handler(CommandHandler("stats", self.stats_command))
         application.add_handler(CommandHandler("voice", self.voice_command))
+        application.add_handler(CommandHandler("lang", self.lang_command))
         application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_message))
         
         # Post init/shutdown hooks

@@ -1,0 +1,83 @@
+{
+  "bot_name": "TauroBot 3.0 Ultimate",
+  
+  "welcome": {
+    "greeting": "🐂 Hallo {name}! Ich bin TauroBot 3.0 Ultimate!",
+    "description": "Ich bin ein fortschrittlicher KI-Bot mit:",
+    "features": {
+      "ai": "🧠 Ollama künstliche Intelligenz",
+      "memory": "💾 Persistenter Gesprächsspeicher",
+      "voice": "🔊 Sprachsynthese",
+      "hacker": "🥷 Hacker-Seele"
+    },
+    "commands_title": "Verfügbare Befehle:",
+    "send_message": "Sende mir eine Nachricht und ich antworte!"
+  },
+  
+  "commands": {
+    "start": "/start - Bot starten",
+    "help": "/help - Hilfe anzeigen",
+    "clear": "/clear - Gesprächsspeicher löschen",
+    "stats": "/stats - Speicherstatistiken",
+    "voice": "/voice - Sprachsynthese ein/ausschalten",
+    "lang": "/lang - Sprache ändern"
+  },
+  
+  "help": {
+    "title": "🐂 *TauroBot 3.0 Ultimate - Hilfe*",
+    "basic_commands": "*Grundbefehle:*",
+    "how_it_works": "*Wie ich funktioniere:*",
+    "feature_ai": "Sende mir eine Nachricht und ich antworte mit KI",
+    "feature_memory": "Ich erinnere mich an unsere vergangenen Gespräche",
+    "feature_voice": "Ich kann mit Sprachnachrichten antworten",
+    "feature_hacker": "Ich bin immer im Hacker-Modus 🥷",
+    "tips": "*Tipps:*",
+    "tip_complex": "Stelle mir komplexe Fragen",
+    "tip_coding": "Frag nach Hilfe bei Coding, Technologie, etc.",
+    "tip_clear": "Nutze /clear um von vorne zu beginnen"
+  },
+  
+  "memory": {
+    "cleared": "✅ Gesprächsspeicher gelöscht!",
+    "nothing_to_clear": "ℹ️ Kein Speicher zum Löschen.",
+    "stats_title": "📊 *Speicherstatistiken*",
+    "your_stats": "*Deine Statistiken:*",
+    "saved_messages": "Gespeicherte Nachrichten: {count}",
+    "global_stats": "*Globale Statistiken:*",
+    "total_users": "Gesamtbenutzer: {count}",
+    "total_messages": "Gesamtnachrichten: {count}",
+    "avg_messages": "Durchschn. Msgs/Benutzer: {avg}"
+  },
+  
+  "voice": {
+    "enabled": "🔊 Sprachsynthese aktiviert!",
+    "disabled": "🔇 Sprachsynthese deaktiviert!"
+  },
+  
+  "language": {
+    "title": "🌍 *Wähle deine Sprache:*",
+    "changed": "✅ Sprache geändert zu: {lang}",
+    "not_supported": "❌ Sprache nicht unterstützt. Verfügbar: {langs}",
+    "current": "Aktuelle Sprache: {lang}"
+  },
+  
+  "errors": {
+    "ai_error": "❌ Fehler beim Kontaktieren der KI: {error}",
+    "generic_error": "❌ Ein Fehler ist aufgetreten. Bitte später erneut versuchen.",
+    "rate_limited": "⚠️ Zu viele Nachrichten! Warte {seconds} Sekunden.",
+    "not_authorized": "🚫 Du bist nicht berechtigt, diesen Befehl zu verwenden."
+  },
+  
+  "rate_limit": {
+    "warning": "⚠️ Du sendest zu viele Nachrichten!",
+    "wait": "Warte {seconds} Sekunden bevor du eine weitere Nachricht sendest.",
+    "limit_info": "Limit: {limit} Nachrichten alle {window} Sekunden."
+  },
+  
+  "system": {
+    "thinking": "🤔 Ich denke nach...",
+    "generating_voice": "🎙️ Generiere Sprachantwort...",
+    "bot_started": "🐂 TauroBot 3.0 gestartet!",
+    "bot_stopped": "🐂 TauroBot 3.0 gestoppt."
+  }
+}

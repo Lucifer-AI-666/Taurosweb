@@ -1,0 +1,83 @@
+{
+  "bot_name": "TauroBot 3.0 Ultimate",
+  
+  "welcome": {
+    "greeting": "🐂 Hello {name}! I'm TauroBot 3.0 Ultimate!",
+    "description": "I'm an advanced AI bot with:",
+    "features": {
+      "ai": "🧠 Ollama artificial intelligence",
+      "memory": "💾 Persistent conversation memory",
+      "voice": "🔊 Text-to-speech",
+      "hacker": "🥷 Hacker soul"
+    },
+    "commands_title": "Available commands:",
+    "send_message": "Send me a message and I'll reply!"
+  },
+  
+  "commands": {
+    "start": "/start - Start the bot",
+    "help": "/help - Show help",
+    "clear": "/clear - Clear conversation memory",
+    "stats": "/stats - Memory statistics",
+    "voice": "/voice - Enable/disable text-to-speech",
+    "lang": "/lang - Change language"
+  },
+  
+  "help": {
+    "title": "🐂 *TauroBot 3.0 Ultimate - Help*",
+    "basic_commands": "*Basic commands:*",
+    "how_it_works": "*How I work:*",
+    "feature_ai": "Send me a message and I'll reply using AI",
+    "feature_memory": "I remember our past conversations",
+    "feature_voice": "I can reply with voice messages",
+    "feature_hacker": "I'm always in hacker mode 🥷",
+    "tips": "*Tips:*",
+    "tip_complex": "Ask me complex questions",
+    "tip_coding": "Ask for help with coding, technology, etc.",
+    "tip_clear": "Use /clear to start fresh"
+  },
+  
+  "memory": {
+    "cleared": "✅ Conversation memory cleared!",
+    "nothing_to_clear": "ℹ️ No memory to clear.",
+    "stats_title": "📊 *Memory Statistics*",
+    "your_stats": "*Your statistics:*",
+    "saved_messages": "Saved messages: {count}",
+    "global_stats": "*Global statistics:*",
+    "total_users": "Total users: {count}",
+    "total_messages": "Total messages: {count}",
+    "avg_messages": "Avg msgs/user: {avg}"
+  },
+  
+  "voice": {
+    "enabled": "🔊 Text-to-speech enabled!",
+    "disabled": "🔇 Text-to-speech disabled!"
+  },
+  
+  "language": {
+    "title": "🌍 *Choose your language:*",
+    "changed": "✅ Language changed to: {lang}",
+    "not_supported": "❌ Unsupported language. Available: {langs}",
+    "current": "Current language: {lang}"
+  },
+  
+  "errors": {
+    "ai_error": "❌ Error contacting AI: {error}",
+    "generic_error": "❌ An error occurred. Please try again later.",
+    "rate_limited": "⚠️ Too many messages! Wait {seconds} seconds.",
+    "not_authorized": "🚫 You are not authorized to use this command."
+  },
+  
+  "rate_limit": {
+    "warning": "⚠️ You're sending too many messages!",
+    "wait": "Wait {seconds} seconds before sending another message.",
+    "limit_info": "Limit: {limit} messages every {window} seconds."
+  },
+  
+  "system": {
+    "thinking": "🤔 Thinking...",
+    "generating_voice": "🎙️ Generating voice response...",
+    "bot_started": "🐂 TauroBot 3.0 started!",
+    "bot_stopped": "🐂 TauroBot 3.0 stopped."
+  }
+}
