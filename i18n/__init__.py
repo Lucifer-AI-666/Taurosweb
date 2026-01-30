@@ -17,7 +17,7 @@ _translations_cache: Dict[str, Dict[str, str]] = {}
 DEFAULT_LANGUAGE = 'it'
 
 # Lingue supportate
-SUPPORTED_LANGUAGES = ['it', 'en', 'es', 'fr', 'de']
+SUPPORTED_LANGUAGES = ['it', 'en', 'es', 'fr', 'de', 'ar_ma']
 
 
 def load_language(lang_code: str) -> Dict[str, str]:
@@ -106,7 +106,8 @@ def get_available_languages() -> Dict[str, str]:
         'en': '🇬🇧 English',
         'es': '🇪🇸 Español',
         'fr': '🇫🇷 Français',
-        'de': '🇩🇪 Deutsch'
+        'de': '🇩🇪 Deutsch',
+        'ar_ma': '🇲🇦 الدارجة المغربية'
     }
 
 

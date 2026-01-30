@@ -1,60 +1,158 @@
 """
 Script per generare le icone PWA per TauroBot 3.0
-Crea icone SVG semplici che possono essere convertite in PNG
+Crea icone SVG con un toro stilizzato professionale
 """
 
 import os
 
-def create_svg_icon(size, output_path):
-    """Crea un'icona SVG per TauroBot"""
-    svg_content = f'''<?xml version="1.0" encoding="UTF-8"?>
-<svg width="{size}" height="{size}" viewBox="0 0 {size} {size}" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background gradient -->
+
+def create_bull_svg(size: int) -> str:
+    """
+    Crea un'icona SVG con un toro stilizzato aggressivo.
+    Design: Testa di toro con corna prominenti, stile minimalista.
+    """
+    
+    svg_content = '''<?xml version="1.0" encoding="UTF-8"?>
+<svg width="{size}" height="{size}" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    <!-- Gradient di sfondo viola/blu -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#667eea"/>
+      <stop offset="50%" stop-color="#764ba2"/>
+      <stop offset="100%" stop-color="#5a3f8a"/>
     </linearGradient>
-    <linearGradient id="bullGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#ffd700;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#ffed4e;stop-opacity:1" />
+    
+    <!-- Gradient dorato per il toro -->
+    <linearGradient id="bullGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffd700"/>
+      <stop offset="50%" stop-color="#ffb800"/>
+      <stop offset="100%" stop-color="#e6a200"/>
     </linearGradient>
+    
+    <!-- Gradient per le corna -->
+    <linearGradient id="hornGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f5f5dc"/>
+      <stop offset="50%" stop-color="#fffaf0"/>
+      <stop offset="100%" stop-color="#d4c896"/>
+    </linearGradient>
+    
+    <!-- Ombra -->
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-opacity="0.3"/>
+    </filter>
   </defs>
   
-  <!-- Background circle -->
-  <circle cx="{size//2}" cy="{size//2}" r="{size//2}" fill="url(#bgGradient)"/>
+  <!-- Sfondo cerchio -->
+  <circle cx="256" cy="256" r="250" fill="url(#bgGrad)"/>
+  <circle cx="256" cy="256" r="230" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="4"/>
   
-  <!-- Bull emoji / symbol -->
-  <text x="50%" y="50%" 
-        font-size="{size*0.6}" 
-        text-anchor="middle" 
-        dominant-baseline="central"
-        fill="url(#bullGradient)"
-        font-family="Arial, sans-serif"
-        font-weight="bold">🐂</text>
-</svg>'''
+  <!-- TORO - Gruppo principale -->
+  <g filter="url(#shadow)">
+    
+    <!-- Corna - Sinistra (curva aggressiva verso l'alto) -->
+    <path d="M 80 180 
+             Q 50 120, 70 70 
+             Q 90 30, 130 40
+             Q 150 70, 150 120
+             Q 150 160, 160 190
+             Q 140 200, 120 195
+             Q 100 190, 80 180"
+          fill="url(#hornGrad)" stroke="#c9b896" stroke-width="3"/>
+    
+    <!-- Corna - Destra (curva aggressiva verso l'alto) -->
+    <path d="M 432 180 
+             Q 462 120, 442 70 
+             Q 422 30, 382 40
+             Q 362 70, 362 120
+             Q 362 160, 352 190
+             Q 372 200, 392 195
+             Q 412 190, 432 180"
+          fill="url(#hornGrad)" stroke="#c9b896" stroke-width="3"/>
+    
+    <!-- Testa del toro -->
+    <ellipse cx="256" cy="280" rx="130" ry="120" fill="url(#bullGold)"/>
+    
+    <!-- Orecchie -->
+    <ellipse cx="140" cy="220" rx="35" ry="25" fill="url(#bullGold)" transform="rotate(-30 140 220)"/>
+    <ellipse cx="372" cy="220" rx="35" ry="25" fill="url(#bullGold)" transform="rotate(30 372 220)"/>
+    
+    <!-- Interno orecchie -->
+    <ellipse cx="145" cy="222" rx="18" ry="12" fill="#e6a200" transform="rotate(-30 145 222)"/>
+    <ellipse cx="367" cy="222" rx="18" ry="12" fill="#e6a200" transform="rotate(30 367 222)"/>
+    
+    <!-- Muso grande e prominente -->
+    <ellipse cx="256" cy="340" rx="85" ry="60" fill="#e6a200"/>
+    <ellipse cx="256" cy="355" rx="70" ry="45" fill="#cc9100"/>
+    
+    <!-- Narici grandi (stile toro) -->
+    <ellipse cx="218" cy="360" rx="20" ry="16" fill="#1a1a1a"/>
+    <ellipse cx="294" cy="360" rx="20" ry="16" fill="#1a1a1a"/>
+    
+    <!-- Riflessi narici -->
+    <ellipse cx="212" cy="355" rx="6" ry="5" fill="#4a4a4a"/>
+    <ellipse cx="288" cy="355" rx="6" ry="5" fill="#4a4a4a"/>
+    
+    <!-- Occhi piccoli e determinati (stile toro arrabbiato) -->
+    <ellipse cx="190" cy="245" rx="25" ry="28" fill="#1a1a1a"/>
+    <ellipse cx="322" cy="245" rx="25" ry="28" fill="#1a1a1a"/>
+    
+    <!-- Pupille con riflesso -->
+    <circle cx="195" cy="240" r="8" fill="#ffffff"/>
+    <circle cx="327" cy="240" r="8" fill="#ffffff"/>
+    
+    <!-- Sopracciglia aggressive (inclinate verso il centro = arrabbiato) -->
+    <path d="M 150 210 Q 170 195, 215 215" stroke="#1a1a1a" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M 362 210 Q 342 195, 297 215" stroke="#1a1a1a" stroke-width="10" fill="none" stroke-linecap="round"/>
+    
+    <!-- Anello al naso (caratteristico del toro) -->
+    <circle cx="256" cy="390" r="25" fill="none" stroke="#c0c0c0" stroke-width="8"/>
+    <circle cx="256" cy="390" r="25" fill="none" stroke="#e8e8e8" stroke-width="4"/>
+    
+    <!-- Sbuffo dal naso (stile toro che sbuffa) -->
+    <ellipse cx="180" cy="340" rx="15" ry="8" fill="rgba(255,255,255,0.3)"/>
+    <ellipse cx="332" cy="340" rx="15" ry="8" fill="rgba(255,255,255,0.3)"/>
+    
+  </g>
+  
+  <!-- Effetto lucido in alto -->
+  <ellipse cx="200" cy="130" rx="80" ry="40" fill="rgba(255,255,255,0.1)"/>
+  
+</svg>'''.format(size=size)
+    
+    return svg_content
+
+
+def create_svg_icon(size: int, output_path: str) -> None:
+    """Crea un'icona SVG per TauroBot"""
+    svg_content = create_bull_svg(size)
     
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(svg_content)
-    print(f"✓ Created {output_path}")
+    print(f"Created {output_path}")
+
 
 def main():
     """Genera tutte le icone necessarie"""
-    print("🎨 Generating PWA icons for TauroBot 3.0...")
+    print("Generating NEW Bull icons for TauroBot 3.0...")
+    print("   (Toro aggressivo con corna, non mucca!)\n")
     
     sizes = [72, 96, 128, 144, 152, 192, 384, 512]
     
     for size in sizes:
         create_svg_icon(size, f'icons/icon-{size}x{size}.svg')
     
-    print("\n✅ All SVG icons generated!")
-    print("\n📝 Note: Le icone SVG sono state create.")
-    print("Per convertirle in PNG, usa uno dei seguenti metodi:")
-    print("1. Apri ogni SVG in un browser e salva come PNG")
-    print("2. Usa ImageMagick: convert icon.svg icon.png")
-    print("3. Usa uno strumento online come https://cloudconvert.com/svg-to-png")
-    print("\nOppure puoi usare le icone SVG direttamente modificando manifest.json")
+    print("\nAll bull icons generated!")
+    print("\nNote: Le icone SVG sono state create con un VERO TORO!")
+    print("   - Corna aggressive curve verso l'alto")
+    print("   - Sopracciglia arrabbiate")
+    print("   - Anello al naso argentato")
+    print("   - Sbuffo dal naso")
+    print("\nPer convertire in PNG:")
+    print("1. Usa un browser e salva come PNG")
+    print("2. Usa: magick convert icon.svg icon.png")
+    print("3. Online: https://cloudconvert.com/svg-to-png")
+
 
 if __name__ == '__main__':
     main()

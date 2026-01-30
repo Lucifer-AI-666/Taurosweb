@@ -7,6 +7,8 @@ import asyncio
 import os
 from memory import MemorySystem
 from voice import VoiceSystem
+from rate_limiter import RateLimiter
+from i18n import get_text, is_supported_language, get_available_languages
 
 
 async def test_memory_system():
@@ -85,6 +87,71 @@ async def test_voice_system():
     print("✅ Voice System: OK")
 
 
+async def test_rate_limiter():
+    """Test del sistema di rate limiting"""
+    print("🧪 Test Rate Limiter...")
+    
+    limiter = RateLimiter(max_requests=3, window_seconds=60, block_duration=10)
+    
+    # Test richieste normali
+    for i in range(3):
+        allowed, wait = limiter.check(123)
+        assert allowed, f"Errore: richiesta {i+1} dovrebbe essere permessa"
+        limiter.record(123)
+    
+    # Test superamento limite
+    allowed, wait = limiter.check(123)
+    assert not allowed, "Errore: richiesta dovrebbe essere bloccata"
+    assert wait is not None, "Errore: wait_seconds dovrebbe essere valorizzato"
+    
+    # Test whitelist
+    limiter.add_to_whitelist(456)
+    for i in range(10):
+        allowed, wait = limiter.check(456)
+        assert allowed, "Errore: utente whitelist dovrebbe sempre passare"
+        limiter.record(456)
+    
+    # Test reset utente
+    limiter.reset_user(123)
+    allowed, wait = limiter.check(123)
+    assert allowed, "Errore: dopo reset dovrebbe essere permesso"
+    
+    # Test statistiche
+    usage = limiter.get_usage(123)
+    assert 'requests_count' in usage, "Errore: mancano statistiche"
+    
+    print("✅ Rate Limiter: OK")
+
+
+async def test_i18n():
+    """Test del sistema di internazionalizzazione"""
+    print("🧪 Test i18n System...")
+    
+    # Test lingue supportate
+    assert is_supported_language('it'), "Errore: italiano dovrebbe essere supportato"
+    assert is_supported_language('en'), "Errore: inglese dovrebbe essere supportato"
+    assert not is_supported_language('xx'), "Errore: lingua inventata non dovrebbe esistere"
+    
+    # Test lista lingue
+    langs = get_available_languages()
+    assert len(langs) >= 5, "Errore: dovrebbero esserci almeno 5 lingue"
+    assert 'it' in langs, "Errore: italiano mancante"
+    assert 'en' in langs, "Errore: inglese mancante"
+    
+    # Test traduzioni
+    text_it = get_text('welcome.greeting', 'it', name='Test')
+    assert 'Ciao' in text_it or 'Test' in text_it, "Errore: traduzione italiana non funziona"
+    
+    text_en = get_text('welcome.greeting', 'en', name='Test')
+    assert 'Hello' in text_en or 'Test' in text_en, "Errore: traduzione inglese non funziona"
+    
+    # Test fallback a chiave se mancante
+    missing = get_text('chiave.inesistente', 'it')
+    assert 'chiave.inesistente' in missing, "Errore: fallback a chiave non funziona"
+    
+    print("✅ i18n System: OK")
+
+
 async def test_config_files():
     """Test presenza file di configurazione"""
     print("🧪 Test Configuration Files...")
@@ -93,13 +160,19 @@ async def test_config_files():
         'bot.py',
         'memory.py',
         'voice.py',
+        'rate_limiter.py',
         'requirements.txt',
         'config.yml',
         '.env.example',
         '.gitignore',
         'README.md',
         'INSTALL.md',
-        'LICENSE'
+        'LICENSE',
+        'Dockerfile',
+        'docker-compose.yml',
+        'i18n/__init__.py',
+        'i18n/it.json',
+        'i18n/en.json'
     ]
     
     missing = []
@@ -125,6 +198,8 @@ async def main():
         await test_config_files()
         await test_memory_system()
         await test_voice_system()
+        await test_rate_limiter()
+        await test_i18n()
         
         print("\n" + "="*50)
         print("✅ Tutti i test completati con successo!")
@@ -132,6 +207,7 @@ async def main():
         
         print("📝 Note:")
         print("  • Per avviare il bot: python bot.py")
+        print("  • Oppure con Docker: docker-compose up -d")
         print("  • Configura .env prima dell'avvio")
         print("  • Assicurati che Ollama sia in esecuzione")
         

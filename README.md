@@ -14,6 +14,10 @@ Taurosweb è il sito ufficiale di **TauroBot 3.0 Ultimate**, un bot AI avanzato 
 - **Anima hacker:** Funzionalità avanzate e personalizzabili per utenti esperti.
 - **Compatibilità Telegram:** Facile integrazione e utilizzo tramite la piattaforma Telegram.
 - **📱 Progressive Web App (PWA):** Installabile su Android, iOS e Desktop come app nativa!
+- **🐳 Docker Ready:** Containerizzazione completa con docker-compose
+- **🌍 Multi-lingua:** Supporto per 5 lingue (IT, EN, ES, FR, DE)
+- **🛡️ Rate Limiting:** Protezione anti-spam integrata
+- **⚙️ CI/CD:** GitHub Actions per test automatici e deploy
 
 ---
 
@@ -78,6 +82,24 @@ Taurosweb è il sito ufficiale di **TauroBot 3.0 Ultimate**, un bot AI avanzato 
    python bot.py
    ```
 
+#### Metodo 3: Docker (Raccomandato per produzione)
+```bash
+# Clona e configura
+git clone https://github.com/Lucifer-AI-666/Taurosweb.git
+cd Taurosweb
+cp .env.example .env
+# Modifica .env con il tuo TELEGRAM_BOT_TOKEN
+
+# Avvia tutto con Docker Compose
+docker-compose up -d
+
+# Scarica un modello Ollama
+docker exec -it ollama ollama pull llama2
+
+# Visualizza i log
+docker-compose logs -f taurobot
+```
+
 Per maggiori dettagli, consulta la [guida di installazione completa](INSTALL.md).
 
 ---
@@ -112,11 +134,31 @@ python bot.py
 ```
 
 ### Comandi Telegram Disponibili
-- `/start` - Avvia il bot e mostra il messaggio di benvenuto
-- `/help` - Mostra aiuto e lista comandi
-- `/clear` - Cancella la memoria della conversazione
-- `/stats` - Mostra statistiche sulla memoria
-- `/voice` - Abilita/disabilita risposte vocali
+| Comando | Descrizione |
+|---------|-------------|
+| `/start` | Avvia il bot e mostra il messaggio di benvenuto |
+| `/help` | Mostra aiuto e lista comandi |
+| `/clear` | Cancella la memoria della conversazione |
+| `/stats` | Mostra statistiche sulla memoria |
+| `/voice` | Abilita/disabilita risposte vocali |
+| `/lang` | Cambia lingua (es. `/lang en`) |
+| `/admin` | Dashboard admin (solo admin) |
+| `/code` | Genera codice (es. `/code python hello world`) |
+| `/translate` | Traduci testo (es. `/translate en Ciao mondo`) |
+| `/remind` | Promemoria (es. `/remind tra 5 minuti Chiamare Mario`) |
+
+### 🌍 Lingue Supportate
+- 🇮🇹 Italiano (default)
+- 🇬🇧 English
+- 🇪🇸 Español
+- 🇫🇷 Français
+- 🇩🇪 Deutsch
+- 🇲🇦 الدارجة المغربية (Darija)
+
+### 👥 Supporto Gruppi
+Il bot funziona anche nei gruppi Telegram! Rispondendo solo quando:
+- Viene menzionato con `@TauroBot`
+- Si risponde a un suo messaggio
 
 ### Interazione
 Invia semplicemente un messaggio al bot su Telegram e ti risponderà utilizzando:
@@ -164,6 +206,7 @@ Taurosweb/
 ├── bot.py                      # Bot Telegram principale
 ├── memory.py                   # Sistema memoria persistente
 ├── voice.py                    # Sistema sintesi vocale (TTS)
+├── rate_limiter.py             # Sistema anti-spam / rate limiting
 ├── test_bot.py                 # Suite di test
 ├── run.py                      # Script Python per avviare il bot
 ├── run.sh                      # Script Bash per avviare il bot
@@ -172,6 +215,9 @@ Taurosweb/
 ├── requirements.txt            # Dipendenze Python
 ├── .env.example                # Template variabili d'ambiente
 ├── .gitignore                  # File esclusi da git
+├── Dockerfile                  # Container Docker
+├── docker-compose.yml          # Orchestrazione Docker + Ollama
+├── .dockerignore               # File esclusi da Docker
 ├── README.md                   # Questo file
 ├── INSTALL.md                  # Guida installazione dettagliata
 ├── PWA_INSTALL.md              # Guida installazione PWA
@@ -181,7 +227,17 @@ Taurosweb/
 ├── manifest.json               # PWA manifest
 ├── service-worker.js           # Service worker per PWA
 ├── generate_pwa_icons.py       # Generatore icone PWA
-└── icons/                      # Icone PWA (SVG)
+├── i18n/                       # Traduzioni multi-lingua
+│   ├── __init__.py             # Modulo i18n
+│   ├── it.json                 # Italiano 🇮🇹
+│   ├── en.json                 # English 🇬🇧
+│   ├── es.json                 # Español 🇪🇸
+│   ├── fr.json                 # Français 🇫🇷
+│   └── de.json                 # Deutsch 🇩🇪
+├── icons/                      # Icone PWA (SVG)
+└── .github/
+    └── workflows/
+        └── ci.yml              # GitHub Actions CI/CD
 ```
 
 ---
