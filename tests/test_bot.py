@@ -5,10 +5,10 @@ Testa i componenti principali senza avviare il bot
 
 import asyncio
 import os
-from memory import MemorySystem
-from voice import VoiceSystem
-from rate_limiter import RateLimiter
-from i18n import get_text, is_supported_language, get_available_languages
+from backend.memory import MemorySystem
+from backend.voice import VoiceSystem
+from backend.rate_limiter import RateLimiter
+from backend.i18n import get_text, is_supported_language, get_available_languages
 
 
 async def test_memory_system():

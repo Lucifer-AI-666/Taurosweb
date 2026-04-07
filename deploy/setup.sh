@@ -1,6 +1,11 @@
 #!/bin/bash
 # TauroBot 3.0 Ultimate - Setup Script
 # This script helps with initial setup and configuration
+# Run from the repo root: bash deploy/setup.sh
+
+# Resolve repo root (one level above this script's directory)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(dirname "$SCRIPT_DIR")"
 
 echo "🐂 TauroBot 3.0 Ultimate - Setup Script"
 echo "========================================"
@@ -19,14 +24,14 @@ echo ""
 
 # Install dependencies
 echo "2️⃣  Installing Python dependencies..."
-pip3 install -r requirements.txt
+pip3 install -r "$REPO_ROOT/backend/requirements.txt"
 echo "✅ Dependencies installed"
 echo ""
 
 # Create .env file if not exists
 echo "3️⃣  Setting up environment file..."
-if [ ! -f .env ]; then
-    cp .env.example .env
+if [ ! -f "$REPO_ROOT/.env" ]; then
+    cp "$REPO_ROOT/.env.example" "$REPO_ROOT/.env"
     echo "✅ .env file created from template"
     echo ""
     echo "⚠️  IMPORTANT: You need to edit .env and configure:"
@@ -40,8 +45,8 @@ echo ""
 
 # Create necessary directories
 echo "4️⃣  Creating directories..."
-mkdir -p memory
-mkdir -p logs
+mkdir -p "$REPO_ROOT/memory"
+mkdir -p "$REPO_ROOT/logs"
 echo "✅ Directories created"
 echo ""
 
@@ -52,8 +57,8 @@ if command -v ollama &> /dev/null; then
     
     # Get Ollama host from .env or use default
     OLLAMA_HOST="http://localhost:11434"
-    if [ -f .env ]; then
-        CONFIGURED_HOST=$(grep "^OLLAMA_HOST=" .env | cut -d'=' -f2)
+    if [ -f "$REPO_ROOT/.env" ]; then
+        CONFIGURED_HOST=$(grep "^OLLAMA_HOST=" "$REPO_ROOT/.env" | cut -d'=' -f2)
         if [ ! -z "$CONFIGURED_HOST" ]; then
             OLLAMA_HOST="$CONFIGURED_HOST"
         fi
@@ -78,6 +83,6 @@ echo "Next steps:"
 echo "1. Edit .env file and set your TELEGRAM_BOT_TOKEN"
 echo "2. Make sure Ollama is running: ollama serve"
 echo "3. Pull a model if needed: ollama pull llama2"
-echo "4. Run the bot: ./run.sh or python3 run.py"
+echo "4. Run the bot: bash deploy/run.sh or python3 deploy/run.py"
 echo ""
-echo "For more help, see README.md or INSTALL.md"
+echo "For more help, see docs/INSTALL.md"

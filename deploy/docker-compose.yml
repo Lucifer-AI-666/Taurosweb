@@ -7,8 +7,8 @@ services:
   # TauroBot - Bot Telegram
   taurobot:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: deploy/Dockerfile
     container_name: taurobot
     restart: unless-stopped
     env_file:
@@ -18,9 +18,9 @@ services:
       - MEMORY_FILE=/app/memory/conversations.json
       - TZ=Europe/Rome
     volumes:
-      - ./memory:/app/memory
-      - ./logs:/app/logs
-      - ./config.yml:/app/config.yml:ro
+      - ../memory:/app/memory
+      - ../logs:/app/logs
+      - ../backend/config.yml:/app/backend/config.yml:ro
     depends_on:
       ollama:
         condition: service_healthy

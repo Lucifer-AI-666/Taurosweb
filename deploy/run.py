@@ -9,6 +9,10 @@ import sys
 import subprocess
 from pathlib import Path
 
+# Add the repo root to the Python path so that `backend` package is importable
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_REPO_ROOT))
+
 
 def check_env_file():
     """Check if .env file exists and is configured"""
@@ -58,7 +62,8 @@ def check_dependencies():
         print(f"❌ Missing dependency: {e}")
         print("📦 Installing dependencies...")
         try:
-            subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt'])
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r',
+                               str(_REPO_ROOT / 'backend' / 'requirements.txt')])
             print("✅ Dependencies installed!")
             return True
         except subprocess.CalledProcessError:
@@ -103,10 +108,10 @@ def main():
     try:
         # Import and run the bot
         try:
-            from bot import main as bot_main
+            from backend.bot import main as bot_main
         except ImportError as e:
             print(f"❌ Error: Could not import bot module: {e}")
-            print("Make sure bot.py exists in the current directory")
+            print("Make sure backend/bot.py exists in the repo root")
             sys.exit(1)
         
         bot_main()

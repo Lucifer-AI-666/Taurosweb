@@ -24,12 +24,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Copia requirements e installa dipendenze Python
-COPY requirements.txt .
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
 # Copia il codice dell'applicazione
-COPY . .
+COPY backend/ ./backend/
+COPY web/ ./web/
+COPY .env.example .env.example
 
 # Crea directory per memoria e logs
 RUN mkdir -p /app/memory /app/logs
@@ -47,4 +49,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python -c "import sys; sys.exit(0)"
 
 # Comando di avvio
-CMD ["python", "bot.py"]
+CMD ["python", "-m", "backend.bot"]
