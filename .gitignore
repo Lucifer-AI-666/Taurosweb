@@ -23,6 +23,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+.venv/
 
 # Virtual environments
 venv/
@@ -51,3 +52,6 @@ Thumbs.db
 # Memory files
 memory/
 *.json.bak
+
+# Build / release artifacts
+*.apk

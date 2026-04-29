@@ -21,11 +21,11 @@ from telegram.ext import (
 )
 import httpx
 
-from memory import MemorySystem
-from voice import VoiceSystem
-from rate_limiter import RateLimiter
-from i18n import i18n, get_text, get_available_languages, is_supported_language
-from reminders import ReminderSystem, parse_reminder_time, Reminder
+from .memory import MemorySystem
+from .voice import VoiceSystem
+from .rate_limiter import RateLimiter
+from .i18n import i18n, get_text, get_available_languages, is_supported_language
+from .reminders import ReminderSystem, parse_reminder_time, Reminder
 
 
 # Configurazione logging

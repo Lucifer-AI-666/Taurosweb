@@ -1,15 +1,20 @@
 #!/bin/bash
 # TauroBot 3.0 Ultimate - Run Script
 # This script simplifies starting the bot
+# Run from the repo root: bash deploy/run.sh
+
+# Resolve repo root (one level above this script's directory)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(dirname "$SCRIPT_DIR")"
 
 echo "🐂 Starting TauroBot 3.0 Ultimate..."
 echo ""
 
 # Check if .env file exists
-if [ ! -f .env ]; then
+if [ ! -f "$REPO_ROOT/.env" ]; then
     echo "⚠️  Warning: .env file not found!"
     echo "Creating .env from .env.example..."
-    cp .env.example .env
+    cp "$REPO_ROOT/.env.example" "$REPO_ROOT/.env"
     echo "✅ .env file created. Please edit it with your bot token before running again."
     echo ""
     echo "You need to:"
@@ -29,14 +34,15 @@ fi
 # Check if dependencies are installed
 if ! python3 -c "import telegram" 2>/dev/null; then
     echo "📦 Installing dependencies..."
-    pip3 install -r requirements.txt
+    pip3 install -r "$REPO_ROOT/backend/requirements.txt"
     echo "✅ Dependencies installed!"
     echo ""
 fi
 
 # Create memory directory if it doesn't exist
-mkdir -p memory
+mkdir -p "$REPO_ROOT/memory"
 
-# Run the bot
+# Run the bot from the repo root so that `backend` is importable
 echo "🚀 Launching bot..."
-python3 bot.py
+cd "$REPO_ROOT"
+python3 -m backend.bot
