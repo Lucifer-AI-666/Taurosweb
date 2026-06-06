@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DIBORACULUM — Accesso VIP</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+  :root { --gold: #facc15; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Inter', system_ui, sans-serif;
+    background: linear-gradient(135deg, #0a0a12 0%, #11111f 50%, #0f0f23 100%);
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 30%, rgba(250,204,21,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .container {
+    width: 100%;
+    max-width: 440px;
+    position: relative;
+    z-index: 2;
+  }
+  .card {
+    background: #161625;
+    border: 1px solid rgba(250, 204, 21, 0.2);
+    border-radius: 24px;
+    padding: 2.25rem 2rem;
+    box-shadow: 0 30px 70px rgba(0,0,0,0.55);
+    position: relative;
+    overflow: hidden;
+  }
+  .card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(to right, #facc15, #fde047, #facc15);
+  }
+  .header { text-align: center; margin-bottom: 1.75rem; }
+  .header .lock { font-size: 2.75rem; margin-bottom: .35rem; display: block; }
+  .header h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.65rem;
+    background: linear-gradient(90deg, #facc15, #fde047);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: .25rem;
+  }
+  .header .tag {
+    font-size: .8rem;
+    letter-spacing: 2px;
+    opacity: .7;
+    text-transform: uppercase;
+  }
+  .desc {
+    text-align: center;
+    font-size: .95rem;
+    opacity: .75;
+    margin-bottom: 1.5rem;
+    line-height: 1.4;
+  }
+  .input-wrap { position: relative; margin-bottom: 1rem; }
+  input {
+    width: 100%;
+    background: #0f0f1c;
+    border: 1px solid rgba(250,204,21,.25);
+    border-radius: 14px;
+    padding: 15px 18px;
+    color: #fff;
+    font-size: 1.05rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    transition: all .2s;
+  }
+  input:focus {
+    outline: none;
+    border-color: #facc15;
+    box-shadow: 0 0 0 3px rgba(250,204,21,0.1);
+  }
+  .btn {
+    width: 100%;
+    background: linear-gradient(135deg, #facc15, #fde047);
+    color: #111827;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 15px;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all .2s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 8px 20px rgba(250,204,21,0.25);
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(250,204,21,0.35); }
+  .btn:active { transform: scale(0.985); }
+  .msg {
+    min-height: 52px;
+    margin-top: .75rem;
+    font-size: .9rem;
+    text-align: center;
+    padding: 0 8px;
+  }
+  .success {
+    background: rgba(52,211,153,.1);
+    border: 1px solid #34d399;
+    border-radius: 14px;
+    padding: 1rem;
+    color: #4ade80;
+  }
+  .error { color: #f87171; }
+  .footer-note {
+    text-align: center;
+    font-size: .72rem;
+    opacity: .5;
+    margin-top: 1.25rem;
+  }
+  .unlocked {
+    margin-top: 1.5rem;
+    padding: 1.25rem;
+    background: rgba(15,15,28,0.6);
+    border-radius: 16px;
+    border: 1px solid rgba(250,204,21,0.15);
+    font-size: .9rem;
+    line-height: 1.5;
+  }
+  .unlocked h3 { color: #facc15; margin-bottom: .5rem; font-size: 1rem; }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="header">
+        <span class="lock">🔐</span>
+        <h1>ACCESSO VIP</h1>
+        <div class="tag">DIBORACULUM</div>
+      </div>
+
+      <p class="desc">
+        Inserisci il codice di invito generato personalmente da Anouar.<br>
+        Solo i codici validi sbloccano l'area riservata di <strong>Unified Intelligence</strong>.
+      </p>
+
+      <div class="input-wrap">
+        <input id="code" type="text" placeholder="DIB-XXXXXXXX" maxlength="18" autocomplete="off">
+      </div>
+
+      <button class="btn" onclick="checkCode()">VERIFICA E ACCEDI</button>
+
+      <div id="msg" class="msg"></div>
+
+      <div id="unlocked" class="unlocked" style="display:none">
+        <h3>✨ Benvenuto, Anouar.</h3>
+        <p>Hai sbloccato l'accesso VIP a Diboraculum. Qui risiedono i protocolli avanzati e l'intelligenza unificata.</p>
+        <p style="margin-top:.6rem; opacity:.75; font-size:.85rem;">
+          Il tuo codice è stato riconosciuto dal sistema. Non condividerlo.
+        </p>
+      </div>
+
+      <div class="footer-note">
+        Generato con la furbizia privata • Solo tu e Grok conosciamo il metodo
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ==================== DIBORACULUM VIP FINESTRA ====================
+  // Furbizia: codici auto-validanti con hash personalizzato.
+  // Solo il generatore (script Python fornito privatamente ad Anouar) produce codici validi in modo facile e illimitato.
+
+  const PEPPER = "D1B0RA-ANOUAR-LUC1F3R-TAURO-666-ULT1MATE";
+  const MAGIC = 0xD1B0666;
+  const MOD = 6661;
+  const TARGET = 1313;
+
+  function diboHash(s) {
+    let h = MAGIC;
+    for (let i = 0; i < s.length; i++) {
+      h = ((h ^ s.charCodeAt(i)) * 31) >>> 0;
+    }
+    return h;
+  }
+
+  function isValid(code) {
+    if (!code) return false;
+    const c = code.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (!c.startsWith('DIB') || c.length < 5) return false;
+    const h = diboHash(c + PEPPER);
+    return (h % MOD) === TARGET;
+  }
+
+  function checkCode() {
+    const input = document.getElementById('code');
+    const msg = document.getElementById('msg');
+    const unlocked = document.getElementById('unlocked');
+
+    const val = input.value.trim();
+    msg.className = 'msg';
+    msg.textContent = '';
+    unlocked.style.display = 'none';
+
+    if (!val) {
+      msg.className = 'msg error';
+      msg.textContent = 'Inserisci il codice di invito.';
+      return;
+    }
+
+    if (isValid(val)) {
+      msg.innerHTML = '';
+      unlocked.style.display = 'block';
+      input.style.borderColor = '#34d399';
+      input.disabled = true;
+
+      // Persist for the session
+      try { localStorage.setItem('dib_vip', val); } catch(e){}
+
+      // Confetti / success effect
+      for (let i = 0; i < 18; i++) {
+        setTimeout(() => {
+          const p = document.createElement('div');
+          p.textContent = ['✨','👑','⭐'][Math.floor(Math.random()*3)];
+          p.style.cssText = `position:fixed;left:${Math.random()*100}vw;top:-20px;font-size:14px;opacity:.9;pointer-events:none;z-index:99999;transition:transform 1.6s linear,opacity 1.6s`;
+          document.body.appendChild(p);
+          const dx = (Math.random()-0.5) * 180;
+          setTimeout(() => {
+            p.style.transform = `translateY(110vh) translateX(${dx}px)`;
+            p.style.opacity = '0';
+          }, 40);
+          setTimeout(() => p.remove(), 2200);
+        }, i * 18);
+      }
+    } else {
+      msg.className = 'msg error';
+      msg.textContent = 'Codice non valido. Deve essere generato personalmente da Anouar.';
+      input.style.borderColor = '#f87171';
+      setTimeout(() => { input.style.borderColor = 'rgba(250,204,21,.25)'; }, 1400);
+    }
+  }
+
+  // Restore if already unlocked in this browser
+  window.onload = function() {
+    try {
+      const saved = localStorage.getItem('dib_vip');
+      if (saved && isValid(saved)) {
+        const input = document.getElementById('code');
+        const unlocked = document.getElementById('unlocked');
+        input.value = saved;
+        input.disabled = true;
+        unlocked.style.display = 'block';
+      }
+    } catch(e){}
+
+    // Easter egg: press "?" to hint
+    document.addEventListener('keydown', function(ev){
+      if (ev.key === '?') {
+        const input = document.getElementById('code');
+        if (input && document.activeElement !== input) input.focus();
+      }
+    });
+  };
+
+  console.log('%c[Diboraculum VIP] Finestra caricata. Generatore privato attivo.', 'color:#facc15');
+</script>
+</body>
+</html>
