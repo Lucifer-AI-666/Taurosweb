@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "buildCommand": null,
+  "devCommand": null,
+  "framework": null,
+  "outputDirectory": ".",
+  "routes": [
+    { "src": "/vip", "dest": "/diboraculum-vip.html" },
+    { "src": "/diboraculum-vip", "dest": "/diboraculum-vip.html" },
+    { "src": "/(.*)", "dest": "/$1" }
+  ]
+}
