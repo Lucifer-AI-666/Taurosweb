@@ -268,3 +268,49 @@ Per domande o supporto, apri una issue su GitHub o contatta gli sviluppatori tra
 *Taurosweb - Il tuo bot AI avanzato per Telegram con memoria, sintesi vocale e anima hacker.*
 
 [Visita il repository su GitHub](https://github.com/Lucifer-AI-666/Taurosweb)
+
+---
+
+## 🔐 Diboraculum VIP Access (diboraculum.com)
+
+Per il dominio **diboraculum.com** è stata aggiunta una **finestra di accesso VIP** protetta da **codice di invito**.
+
+### Come funziona
+- Clicca su **⭐ VIP** nella navbar del sito (o apri direttamente `diboraculum-vip.html`)
+- Inserisci un codice di invito valido
+- Il sistema usa una **furbizia crittografica privata** (hash personalizzato + pepper segreto + condizione matematica specifica)
+
+**Solo i codici generati da te (Anouar) con lo script dedicato sono accettati.**
+
+### File aggiunti
+- `diboraculum-vip.html` — Pagina standalone elegante per l'accesso VIP (puoi puntare direttamente il dominio o un path su Vercel)
+- `generate-vip-codes.py` — Lo script Python privato che genera codici validi all'istante
+
+### Genera codici (solo tu)
+```bash
+# Clona (o scarica solo lo script)
+git clone https://github.com/Lucifer-AI-666/Taurosweb.git
+cd Taurosweb
+
+python generate-vip-codes.py --count 5 --base ANOUAR
+python generate-vip-codes.py --count 10 --base DIBORA
+```
+
+Esempi di codici che produce (cambiano a ogni esecuzione):
+```
+DIBANOUAR00007
+DIBDIBORA00042
+...
+```
+
+I codici sono **illimitati** e **facili da generare solo con questo script**.
+Il verificatore sul sito non contiene una lista — usa la stessa logica segreta.
+
+### Consigli
+- Genera i codici in locale e conservali in un posto sicuro.
+- Non committare codici reali nel repo.
+- Lo script contiene i parametri magici (pepper, magic, mod, target) — tienilo privato.
+
+---
+
+*Accesso VIP creato per Diboraculum — Unified Intelligence (email: anouardbinra88@gmail.com)*
