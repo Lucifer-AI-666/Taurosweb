@@ -1,9 +1,9 @@
 {
   "version": 2,
-  "buildCommand": null,
-  "devCommand": null,
   "framework": null,
+  "buildCommand": null,
   "outputDirectory": ".",
+  "cleanUrls": true,
   "routes": [
     { "src": "/vip", "dest": "/diboraculum-vip.html" },
     { "src": "/diboraculum-vip", "dest": "/diboraculum-vip.html" },

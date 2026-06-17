@@ -1,0 +1,16 @@
+bot.py
+*.py
+requirements.txt
+Dockerfile
+docker-compose.yml
+.dockerignore
+setup.sh
+run.sh
+run.py
+config.yml
+AnouarLauncher*.apk
+generate-vip-codes.py
+generate_pwa_icons.py
+test_bot.py
+.github/
+.git/
